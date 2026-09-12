@@ -1657,6 +1657,7 @@ function last7(fn){let t=0;for(let i=0;i<7;i++)t+=fn(addDays(today(),-i));return
    localStorage and pushes whatever changed the next time it can. */
 const SB=!!(SUPABASE_URL&&SUPABASE_KEY);
 let CLOUD=null, ME=null, SYNC='off', DIRTY=new Set(), syncT=null, settingsDirty=false;
+let SYNC_MSG='', SLIM=false;
 const MODE_KEY='caltrack-mode';
 
 function initCloud(){
@@ -1721,13 +1722,22 @@ function tombstone(d,id){
 function touchSettings(){settingsDirty=true;queueSync()}
 function queueSync(){clearTimeout(syncT);syncT=setTimeout(()=>syncNow('edit'),1200)}
 
-function setSync(s){SYNC=s;syncPill();renderAccount()}
+function setSync(s,msg){SYNC=s;SYNC_MSG=msg||'';syncPill();renderAccount()}
+function why(e){
+  const m=String((e&&e.message)||e||'');
+  if(/schema cache|column .* does not exist/i.test(m)) return 'Database is missing a column — run the latest migration SQL';
+  if(/row-level security/i.test(m))                    return 'Blocked by a database policy — re-run the schema SQL';
+  if(/relation .* does not exist/i.test(m))            return 'A table is missing — run the schema SQL';
+  if(/JWT|token|expired/i.test(m))                     return 'Session expired — sign out and back in';
+  if(/Failed to fetch|NetworkError|load failed/i.test(m)) return 'No connection to Supabase';
+  return m.slice(0,90);
+}
 function syncPill(){
   const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
   if(!dot) return;
   dot.className='sync-dot';
   const map={off:['','Local only'],idle:['on','Synced'],busy:['','Syncing'],
-             err:['off','Offline — will retry'],anon:['off','Not signed in']};
+             err:['off','Sync problem'],anon:['off','Not signed in']};
   const [cls,label]=map[SYNC]||map.off;
   if(cls) dot.classList.add(cls);
   txt.textContent=label;
@@ -1789,9 +1799,9 @@ async function syncNow(reason){
   try{
     ok=await pullMerge()&&ok;
     ok=await pushDirty()&&ok;
-    setSync(ok?'idle':'err');
+    setSync(ok?'idle':'err',ok?'':SYNC_MSG);
   }catch(e){
-    console.warn('sync failed',reason,e);setSync('err');ok=false;
+    console.warn('sync failed',reason,e);setSync('err',why(e));ok=false;
   }finally{syncing=false}
   return ok;
 }
@@ -1826,7 +1836,7 @@ async function pullMerge(){
     save();
     if(changed) softRender();
     return true;
-  }catch(e){console.warn('pull failed',e);return false}
+  }catch(e){console.warn('pull failed',e);SYNC_MSG=why(e);return false}
 }
 
 async function pushDirty(){
@@ -1843,13 +1853,8 @@ async function pushDirty(){
     }
     for(const d of [...DIRTY]){
       const r=S.days[d];if(!r){DIRTY.delete(d);continue}
-      const m=dMacros(d);
-      const {error}=await CLOUD.from('days').upsert({
-        user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
-        del:r._del||[],steps_u:r._us||null,water_u:r._uw||null,
-        kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
-        updated_at:r._u||now()});
-      if(error) throw error;
+      const err=await upsertDay(d,r);
+      if(err) throw err;
       DIRTY.delete(d);
     }
     if(WDIRTY.size){
@@ -1859,9 +1864,28 @@ async function pushDirty(){
       WDIRTY.clear();
     }
     return true;
-  }catch(e){console.warn('push failed',e);return false}
+  }catch(e){console.warn('push failed',e);SYNC_MSG=why(e);return false}
 }
 let WDIRTY=new Set();
+
+/* The merge columns arrived in migration 02. If the database hasn't
+   had it applied, fall back to the original shape rather than
+   failing every save — the app still works, it just can't merge
+   two devices editing the same day. */
+async function upsertDay(d,r){
+  const m=dMacros(d);
+  const row={user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
+    kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
+    updated_at:r._u||now()};
+  if(!SLIM){row.del=r._del||[];row.steps_u=r._us||null;row.water_u=r._uw||null}
+  const {error}=await CLOUD.from('days').upsert(row);
+  if(error&&!SLIM&&/del|steps_u|water_u|schema cache/i.test(error.message||'')){
+    SLIM=true;
+    console.warn('days table is missing the migration-02 columns — falling back');
+    return upsertDay(d,r);
+  }
+  return error||null;
+}
 
 /* redraw without kicking off another sync */
 function softRender(){
@@ -2015,12 +2039,12 @@ function renderAccount(){
     return;
   }
   const state={idle:['Synced','var(--accent)'],busy:['Syncing…','var(--muted)'],
-               err:['Offline — will retry','var(--c)'],off:['Local only','var(--faint)']}[SYNC]||['','var(--faint)'];
+               err:[SYNC_MSG||'Sync failed — will retry','var(--c)'],off:['Local only','var(--faint)']}[SYNC]||['','var(--faint)'];
   slot.innerHTML=`<div class="acct">
       <div class="acct-av">${esc(initials(S.name))}</div>
       <div class="acct-info">
         <div class="acct-mail">${esc(ME.email)}</div>
-        <div class="acct-state" style="color:${state[1]}">${esc(state[0])}</div>
+        <div class="acct-state" style="color:${state[1]};white-space:normal">${esc(state[0])}</div>
       </div>
     </div>
     <div class="row" style="cursor:pointer" onclick="pushAll()">
@@ -2597,17 +2621,28 @@ async function createChallenge(){
   if(!from||!to||to<from){toast('Check the dates');return}
   if(!CLOUD||!ME){toast('Sign in first');return}
   try{
+    // Insert without asking for the row back. Reading it back at insert
+    // time needs a SELECT policy to pass before you're a member, which
+    // it can't. join_challenge runs with elevated rights, adds the
+    // membership and returns the row — one call, no policy race.
     let code,ins,tries=0;
     do{
       code=newCode();
-      ins=await CLOUD.from('challenges').insert({code,name,starts:from,ends:to,created_by:ME.id}).select().single();
+      ins=await CLOUD.from('challenges').insert({code,name,starts:from,ends:to,created_by:ME.id});
     }while(ins.error&&/duplicate|unique/i.test(ins.error.message||'')&&++tries<5);
     if(ins.error) throw ins.error;
-    await CLOUD.from('challenge_members').insert({challenge_id:ins.data.id,user_id:ME.id});
-    S.ch={id:ins.data.id,code:ins.data.code,name:ins.data.name,starts:ins.data.starts,ends:ins.data.ends};
+
+    const {data,error}=await CLOUD.rpc('join_challenge',{p_code:code});
+    if(error) throw error;
+    const c=Array.isArray(data)?data[0]:data;
+    if(!c) throw new Error('Created, but could not read it back');
+    S.ch={id:c.id,code:c.code,name:c.name,starts:c.starts,ends:c.ends};
     touchSettings();save();closeAll();renderChallenge();
     toast('Created — share code '+S.ch.code);
-  }catch(e){toast('Couldn’t create: '+(e.message||e))}
+  }catch(e){
+    closeAll();
+    toast('Could not create: '+why(e));
+  }
 }
 function openJoin(){document.getElementById('j-in').value='';open('ov-join')}
 async function joinChallenge(){
@@ -2624,7 +2659,7 @@ async function joinChallenge(){
     toast('Joined '+c.name);
   }catch(e){
     document.getElementById('j-note').textContent=
-      /No challenge/i.test(e.message||'')?'No challenge with that code — check it and try again.':(e.message||String(e));
+      /No challenge/i.test(e.message||'')?'No challenge with that code — check it and try again.':why(e);
   }
 }
 async function leaveChallenge(){
