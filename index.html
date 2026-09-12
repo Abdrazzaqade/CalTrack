@@ -614,6 +614,10 @@ body{
 }
 .gate::-webkit-scrollbar{display:none}
 .gate.hidden{display:none!important}
+/* .btn carries flex:1 for horizontal button rows; the gate is a column,
+   so without this its buttons stretch to fill the whole height */
+.gate > *{flex:0 0 auto}
+.gate .btn{padding:14px}
 .gate-logo{
   width:60px;height:60px;border-radius:19px;margin-bottom:22px;
   background:rgba(195,245,63,.11);border:1px solid rgba(195,245,63,.3);
@@ -726,6 +730,9 @@ body{
 </head>
 <body>
 
+<!-- ═══════════ PHONE ═══════════ -->
+<div class="phone">
+
 <!-- ═══════════ AUTH GATE ═══════════ -->
 <div class="gate hidden" id="gate">
   <div class="gate-logo">🔥</div>
@@ -826,8 +833,6 @@ body{
   </div>
 </div>
 
-<!-- ═══════════ PHONE ═══════════ -->
-<div class="phone">
   <div class="status-bar">
     <span id="clock">9:41</span>
     <span class="sb-right">◦◦◦ ᯤ ▮</span>
