@@ -12,7 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="CalTrack">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="favicon-32.png" sizes="32x32">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1340,13 +1341,13 @@ body{
 </div>
 <script>
 /* ════════════════════════════════════════════════════════════
-   CONFIG — paste your Supabase details to switch the
-   leaderboards on. Leave blank and everything else still works.
-   Supabase dashboard → Project Settings → API
+   CONFIG — your keys live in config.js, which never gets
+   overwritten when this file is updated. Edit that, not this.
+   The two constants below are only a fallback for older copies.
    ════════════════════════════════════════════════════════════ */
-const SUPABASE_URL   = 'https://aaiqjiaqvyzdfxdxibol.supabase.co';
-const SUPABASE_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhaXFqaWFxdnl6ZGZ4ZHhpYm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNTkxNDksImV4cCI6MjEwNDczNTE0OX0.FUzAwYRGLk7DxOfUqBlVcOGruXfc9cgeVtSO5LqVWX4';
-const SUPABASE_TABLE = 'caltrack_users';
+const _CFG = (typeof window!=='undefined' && window.CALTRACK_CONFIG) || {};
+const SUPABASE_URL = _CFG.url || '';
+const SUPABASE_KEY = _CFG.key || '';
 
 /* ══ FOOD DB — kcal, protein/carb/fat grams per stated serving ══ */
 const DB=[
@@ -1559,6 +1560,12 @@ function load(){
   }
   // anyone upgrading from an older version has already been through it
   if(S.onboarded===undefined||S.onboarded===false) S.onboarded=!!S.name&&Object.keys(S.days||{}).length>0;
+  // entries logged before per-entry merging existed need ids
+  Object.values(S.days||{}).forEach(r=>{
+    (r.foods||[]).forEach(f=>{if(!f.id)f.id=eid()});
+    (r.acts||[]).forEach(a=>{if(!a.id)a.id=eid()});
+    if(!r._del) r._del=[];
+  });
   if(!S.uid) S.uid=uid();
   VIEW=today();
   save();
@@ -1684,15 +1691,32 @@ function dayPoints(d){
 }
 function pointsToday(){return dayPoints(VIEW)}
 
-function touch(d){
+/* ── change tracking ──────────────────────────────────────────
+   Every food and activity carries its own id and timestamp, so two
+   devices editing the same day merge entry by entry instead of one
+   overwriting the other's whole list. Deleted ids are remembered in
+   `_del` so a device that hasn't synced can't bring them back.   */
+const now=()=>new Date().toISOString();
+function eid(){return 'e'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)}
+function stamp(e){if(!e.id)e.id=eid();e._u=now();return e}
+
+function touch(d,field){
   const r=S.days[d];
-  if(r) r._u=new Date().toISOString();
+  if(r){
+    r._u=now();
+    if(field==='steps') r._us=r._u;
+    if(field==='water') r._uw=r._u;
+  }
   DIRTY.add(d);queueSync();
 }
+function tombstone(d,id){
+  const r=S.days[d];if(!r||!id) return;
+  r._del=[...new Set([...(r._del||[]),id])].slice(-500);
+}
 function touchSettings(){settingsDirty=true;queueSync()}
-function queueSync(){clearTimeout(syncT);syncT=setTimeout(pushAll,1200)}
+function queueSync(){clearTimeout(syncT);syncT=setTimeout(()=>syncNow('edit'),1200)}
 
-function setSync(s){SYNC=s;syncPill()}
+function setSync(s){SYNC=s;syncPill();renderAccount()}
 function syncPill(){
   const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
   if(!dot) return;
@@ -1704,47 +1728,71 @@ function syncPill(){
   txt.textContent=label;
 }
 
-async function pushAll(){
-  if(!CLOUD||!ME) return;
-  setSync('busy');
-  try{
-    if(settingsDirty){
-      const {error}=await CLOUD.from('settings')
-        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:new Date().toISOString()});
-      if(error) throw error;
-      settingsDirty=false;
-      await CLOUD.from('profiles').upsert({id:ME.id,display_name:S.name||'Friend',
-        avatar:S.avatar,streak:streak(),best_streak:S.bestStreak,badges:earned().length,
-        updated_at:new Date().toISOString()});
-    }
-    const dates=[...DIRTY];
-    for(const d of dates){
-      const r=S.days[d];if(!r) continue;
-      const m=dMacros(d);
-      const {error}=await CLOUD.from('days').upsert({
-        user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
-        kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
-        updated_at:r._u||new Date().toISOString()});
-      if(error) throw error;
-      DIRTY.delete(d);
-    }
-    if(WDIRTY.size){
-      const rows=[...WDIRTY].map(d=>({user_id:ME.id,date:d,kg:S.weights[d],updated_at:new Date().toISOString()}));
-      const {error}=await CLOUD.from('weights').upsert(rows);
-      if(error) throw error;
-      WDIRTY.clear();
-    }
-    setSync('idle');
-  }catch(e){
-    console.warn('sync push failed',e);
-    setSync('err');
-  }
+/* ── merge ── */
+function normDay(r){
+  return {foods:(r.foods||[]).map(f=>f.id?f:{...f,id:eid()}),
+          acts:(r.acts||[]).map(a=>a.id?a:{...a,id:eid()}),
+          steps:r.steps||0,water:r.water||0,
+          _u:r.updated_at||r._u||null,_us:r.steps_u||r._us||null,_uw:r.water_u||r._uw||null,
+          _del:r.del||r._del||[]};
 }
-let WDIRTY=new Set();
+const newer=(a,b)=>String(a||'')>String(b||'');
+function mergeDay(local,server){
+  if(!local) return server;
+  if(!server) return local;
+  const del=new Set([...(local._del||[]),...(server._del||[])]);
+  const join=(a=[],b=[])=>{
+    const m=new Map();
+    [...a,...b].forEach(e=>{
+      if(!e) return;
+      const id=e.id||eid();
+      if(del.has(id)) return;
+      const prev=m.get(id);
+      if(!prev||newer(e._u,prev._u)) m.set(id,{...e,id});
+    });
+    return [...m.values()].sort((x,y)=>String(x.t||'').localeCompare(String(y.t||'')));
+  };
+  const sSteps=newer(server._us,local._us);
+  const sWater=newer(server._uw,local._uw);
+  return {
+    foods:join(local.foods,server.foods),
+    acts:join(local.acts,server.acts),
+    steps:sSteps?server.steps:local.steps,
+    water:sWater?server.water:local.water,
+    _us:sSteps?server._us:local._us,
+    _uw:sWater?server._uw:local._uw,
+    _del:[...del].slice(-500),
+    _u:newer(server._u,local._u)?server._u:local._u,
+  };
+}
+function sameDay(a,b){
+  if(!a||!b) return false;
+  const sig=d=>JSON.stringify([d.steps,d.water,
+    (d.foods||[]).map(f=>[f.id,f._u]).sort(),
+    (d.acts||[]).map(x=>[x.id,x._u]).sort(),
+    (d._del||[]).slice().sort()]);
+  return sig(a)===sig(b);
+}
 
-async function pullAll(){
-  if(!CLOUD||!ME) return false;
+/* ── the sync cycle: pull, merge, push ── */
+let syncing=false;
+async function syncNow(reason){
+  if(!CLOUD||!ME||syncing) return false;
+  syncing=true;
   setSync('busy');
+  let ok=true;
+  try{
+    ok=await pullMerge()&&ok;
+    ok=await pushDirty()&&ok;
+    setSync(ok?'idle':'err');
+  }catch(e){
+    console.warn('sync failed',reason,e);setSync('err');ok=false;
+  }finally{syncing=false}
+  return ok;
+}
+
+async function pullMerge(){
+  if(!CLOUD||!ME) return false;
   try{
     const since=addDays(today(),-180);
     const [st,dy,wt]=await Promise.all([
@@ -1755,23 +1803,89 @@ async function pullAll(){
     // maybeSingle normally gives one row, but tolerate an array either way —
     // silently mis-reading this would look exactly like a brand new account
     const srow=Array.isArray(st.data)?st.data[0]:st.data;
-    if(srow&&srow.data) applySettings(srow.data);
+    if(srow&&srow.data&&!settingsDirty) applySettings(srow.data);
+
+    let changed=false;
     (dy.data||[]).forEach(r=>{
+      const server=normDay(r);
       const local=S.days[r.date];
-      const serverNewer=!local||!local._u||(r.updated_at&&r.updated_at>local._u);
-      if(serverNewer) S.days[r.date]={foods:r.foods||[],acts:r.acts||[],steps:r.steps||0,
-                                      water:r.water||0,_u:r.updated_at};
+      const merged=mergeDay(local,server);
+      if(!sameDay(local,merged)){S.days[r.date]=merged;changed=true}
+      // if the merge differs from what the server holds, it needs writing back
+      if(!sameDay(server,merged)) DIRTY.add(r.date);
     });
     (wt.data||[]).forEach(r=>{if(S.weights[r.date]===undefined) S.weights[r.date]=Number(r.kg)});
     const ks=Object.keys(S.weights).sort();
     if(ks.length) S.weight=S.weights[ks[ks.length-1]];
-    save();setSync('idle');
+
+    save();
+    if(changed) softRender();
     return true;
-  }catch(e){
-    console.warn('sync pull failed',e);setSync('err');
-    return false;
-  }
+  }catch(e){console.warn('pull failed',e);return false}
 }
+
+async function pushDirty(){
+  if(!CLOUD||!ME) return false;
+  try{
+    if(settingsDirty){
+      const {error}=await CLOUD.from('settings')
+        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:now()});
+      if(error) throw error;
+      settingsDirty=false;
+      await CLOUD.from('profiles').upsert({id:ME.id,display_name:S.name||'Friend',
+        avatar:S.avatar,streak:streak(),best_streak:S.bestStreak,badges:earned().length,
+        updated_at:now()});
+    }
+    for(const d of [...DIRTY]){
+      const r=S.days[d];if(!r){DIRTY.delete(d);continue}
+      const m=dMacros(d);
+      const {error}=await CLOUD.from('days').upsert({
+        user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
+        del:r._del||[],steps_u:r._us||null,water_u:r._uw||null,
+        kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
+        updated_at:r._u||now()});
+      if(error) throw error;
+      DIRTY.delete(d);
+    }
+    if(WDIRTY.size){
+      const rows=[...WDIRTY].map(d=>({user_id:ME.id,date:d,kg:S.weights[d],updated_at:now()}));
+      const {error}=await CLOUD.from('weights').upsert(rows);
+      if(error) throw error;
+      WDIRTY.clear();
+    }
+    return true;
+  }catch(e){console.warn('push failed',e);return false}
+}
+let WDIRTY=new Set();
+
+/* redraw without kicking off another sync */
+function softRender(){
+  recomputeStats();
+  renderDayHeader();renderRing();renderTiles();renderMeals();
+  renderActivity();
+  if(document.getElementById('screen-progress').classList.contains('active')) renderProgress();
+  if(document.getElementById('screen-profile').classList.contains('active')) renderProfile();
+}
+
+/* keep the two devices honest: pull whenever the app comes back to
+   life, and on a slow heartbeat while it's on screen */
+let beat=null;
+function startHeartbeat(){
+  clearInterval(beat);
+  beat=setInterval(()=>{
+    if(document.visibilityState==='visible'&&ME&&navigator.onLine) syncNow('heartbeat');
+  },60000);
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){if(ME) syncNow('focus')}
+  else if(ME) pushDirty();
+});
+window.addEventListener('online',()=>{if(ME) syncNow('online')});
+window.addEventListener('focus',()=>{if(ME&&document.visibilityState==='visible') syncNow('focus')});
+
+/* kept so older call sites keep working */
+const pushAll=()=>syncNow('manual');
+const pullAll=pullMerge;
 
 /* ══ AUTH GATE ══ */
 let GATE_MODE='in';
@@ -1840,13 +1954,14 @@ async function onSignedIn(user){
   await CLOUD.from('profiles').upsert({id:ME.id,
     display_name:S.name||user.user_metadata?.display_name||user.email.split('@')[0],
     avatar:S.avatar,updated_at:new Date().toISOString()},{onConflict:'id'});
-  const pulled=await pullAll();
+  const pulled=await pullMerge();
   if(!S.name) S.name=user.user_metadata?.display_name||user.email.split('@')[0];
   await loadChallenge();
   // anything created before signing in belongs to this account now
   Object.keys(S.days).forEach(d=>DIRTY.add(d));
   Object.keys(S.weights).forEach(d=>WDIRTY.add(d));
   settingsDirty=true;
+  startHeartbeat();
   // only treat this as a new account when the pull actually succeeded —
   // otherwise a flaky connection would drop a returning user into setup
   if(!S.onboarded&&(pulled||!S.name)){
@@ -1857,7 +1972,7 @@ async function onSignedIn(user){
     render();goScreen('home');
     if(!pulled) toast('Signed in — couldn\u2019t reach your data yet, will retry');
   }
-  pushAll();
+  syncNow('signin');
 }
 
 function useOffline(){
@@ -2124,7 +2239,9 @@ function renderActivity(){
     row.innerHTML=`<div class="log-ico">${a.icon}</div>
       <div class="log-info"><div class="log-name">${esc(a.name)}</div><div class="log-sub">${a.dur} min${a.t?' · '+fmtTime(a.t):''}</div></div>
       <div class="log-cal">${a.cal} kcal</div><button class="log-del">×</button>`;
-    row.querySelector('.log-del').onclick=()=>{d.acts.splice(i,1);touch(VIEW);render();toast('Removed')};
+    row.querySelector('.log-del').onclick=()=>{
+      const gone=d.acts.splice(i,1)[0];
+      tombstone(VIEW,gone&&gone.id);touch(VIEW);render();toast('Removed')};
     list.appendChild(row);
   });
   if(d.steps){
@@ -2900,9 +3017,9 @@ function saveFood(){
   const day=D();
   const e={meal:MEAL,name,serving:g('f-serv').trim(),cal,p:n('f-p'),c2:n('f-c'),f:n('f-f'),
            base:BASE||null,qty:numv(g('f-qty'))||1,unit:document.getElementById('f-unit').value||'serving'};
-  if(EDIT!==null){e.t=day.foods[EDIT].t;day.foods[EDIT]=e;toast('Updated')}
+  if(EDIT!==null){e.t=day.foods[EDIT].t;e.id=day.foods[EDIT].id;day.foods[EDIT]=stamp(e);toast('Updated')}
   else{
-    e.t=new Date().toISOString();day.foods.push(e);
+    e.t=now();day.foods.push(stamp(e));
     S.stats.totalFoods=(S.stats.totalFoods||0)+1;
     S.recents=[name,...S.recents.filter(x=>x!==name)].slice(0,8);
     if(SAVE_CUSTOM&&BASE){
@@ -2918,13 +3035,14 @@ function saveFood(){
 function dupFood(){
   if(EDIT===null) return;
   const day=D();
-  day.foods.push({...day.foods[EDIT],t:new Date().toISOString()});touch(VIEW);
+  day.foods.push(stamp({...day.foods[EDIT],id:null,t:now()}));touch(VIEW);
   S.stats.totalFoods=(S.stats.totalFoods||0)+1;
   closeAll();render();toast('Duplicated');
 }
 function delFood(){
   if(EDIT===null) return;
-  D().foods.splice(EDIT,1);touch(VIEW);closeAll();render();toast('Deleted');
+  const gone=D().foods.splice(EDIT,1)[0];
+  tombstone(VIEW,gone&&gone.id);touch(VIEW);closeAll();render();toast('Deleted');
 }
 
 /* ── saved meals ── */
@@ -2950,8 +3068,8 @@ function confirmSaveMeal(){
 }
 function logMeal(m){
   const day=D();
-  const now=new Date().toISOString();
-  m.items.forEach(i=>day.foods.push({...i,meal:MEAL,t:now}));touch(VIEW);
+  const ts=now();
+  m.items.forEach(i=>day.foods.push(stamp({...i,id:null,meal:MEAL,t:ts})));touch(VIEW);
   S.stats.totalFoods=(S.stats.totalFoods||0)+m.items.length;
   closeAll();render();toast(m.name+' → '+MEAL);
 }
@@ -2982,7 +3100,7 @@ function updDur(){
 function addAct(){
   if(SEL===null){toast('Pick an activity');return}
   const a=ACTS[SEL];
-  D().acts.push({name:a.name,icon:a.icon,dur:DUR,cal:Math.round(a.rate*DUR),t:new Date().toISOString()});touch(VIEW);
+  D().acts.push(stamp({name:a.name,icon:a.icon,dur:DUR,cal:Math.round(a.rate*DUR),t:now()}));touch(VIEW);
   closeAll();render();toast(a.name+' logged');
 }
 
@@ -2997,11 +3115,11 @@ function wLitres(){
   document.getElementById('w-l').textContent=`${L(D().water)} L of ${L(S.waterGoal)} L`;
 }
 function addWater(n){
-  const d=D();d.water=Math.max(0,Math.min(40,d.water+n));touch(VIEW);
+  const d=D();d.water=Math.max(0,Math.min(40,d.water+n));touch(VIEW,'water');
   document.getElementById('w-n').textContent=d.water;wLitres();renderTiles();save();
 }
 function openSteps(){document.getElementById('s-in').value=D().steps||'';open('ov-steps')}
-function saveSteps(){D().steps=Math.max(0,parseInt(document.getElementById('s-in').value)||0);touch(VIEW);closeAll();render()}
+function saveSteps(){D().steps=Math.max(0,parseInt(document.getElementById('s-in').value)||0);touch(VIEW,'steps');closeAll();render()}
 function openWeight(){
   document.getElementById('w-unit').textContent=S.unit;
   document.getElementById('wg-date').value=VIEW;
@@ -3048,7 +3166,10 @@ function setDisplayName(){
 }
 function resetDay(){
   if(!confirm('Clear food, activities, steps and water for '+relLabel(VIEW).toLowerCase()+'?')) return;
-  S.days[VIEW]={foods:[],acts:[],steps:0,water:0};touch(VIEW);
+  const old=D();
+  const ids=[...old.foods,...old.acts].map(x=>x.id).filter(Boolean);
+  S.days[VIEW]={foods:[],acts:[],steps:0,water:0,_del:[...(old._del||[]),...ids]};
+  touch(VIEW);touch(VIEW,'steps');touch(VIEW,'water');
   render();toast('Day cleared');
 }
 function clearAll(){
@@ -3179,7 +3300,7 @@ function wireAuthEvents(){
   try{
     CLOUD.auth.onAuthStateChange((evt,session)=>{
       if(evt==='SIGNED_OUT'){ME=null;setSync('anon');renderAccount()}
-      if(evt==='TOKEN_REFRESHED'&&ME) pushAll();
+      if(evt==='TOKEN_REFRESHED'&&ME) syncNow('token');
     });
   }catch(e){}
 }
@@ -3190,9 +3311,6 @@ setInterval(clock,30000);
 setInterval(()=>{
   if(VIEW!==today()&&document.getElementById('day-rel').textContent==='Today'){VIEW=today();render()}
 },60000);
-// a last push when the app goes to the background
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&ME) pushAll()});
-window.addEventListener('online',()=>{if(ME) pushAll()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
 </script>
