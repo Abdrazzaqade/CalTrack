@@ -14,6 +14,6 @@
    sync or challenges.
    ════════════════════════════════════════════════════════════════ */
 window.CALTRACK_CONFIG = {
-  url: 'https://aaiqjiaqvyzdfxdxibol.supabase.co/rest/v1/',
+  url: 'https://aaiqjiaqvyzdfxdxibol.supabase.co/',
   key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhaXFqaWFxdnl6ZGZ4ZHhpYm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNTkxNDksImV4cCI6MjEwNDczNTE0OX0.FUzAwYRGLk7DxOfUqBlVcOGruXfc9cgeVtSO5LqVWX4'
 };
