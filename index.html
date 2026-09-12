@@ -1519,7 +1519,7 @@ let S={
  days:{},            // 'YYYY-MM-DD' -> {foods,acts,steps,water}
  legacy:{},          // pre-v5 daily totals, used by charts only
  bestStreak:0,favs:[],recents:[],custom:[],meals:[],
- ch:null,layout:null,
+ ch:null,layout:null,_su:null,
  stats:{totalFoods:0,daysLogged:0,maxSteps:0,maxWater:0,maxBurn:0,perfectDays:0,proteinDays:0},
 };
 let VIEW='';         // date currently on screen
@@ -1650,7 +1650,7 @@ function last7(fn){let t=0;for(let i=0;i<7;i++)t+=fn(addDays(today(),-i));return
    localStorage and pushes whatever changed the next time it can. */
 const SB=!!(SUPABASE_URL&&SUPABASE_KEY);
 let CLOUD=null, ME=null, SYNC='off', DIRTY=new Set(), syncT=null, settingsDirty=false;
-let SYNC_MSG='', SLIM=false;
+let SYNC_MSG='', SLIM=false, SERVER_ACCOUNT=false;
 const MODE_KEY='caltrack-mode';
 
 function initCloud(){
@@ -1670,8 +1670,9 @@ function settingsBlob(){
     favs:S.favs,recents:S.recents,custom:S.custom,meals:S.meals,
     bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null};
 }
-function applySettings(d){
+function applySettings(d,stamp){
   if(!d) return;
+  if(stamp) S._su=stamp;
   ['name','avatar','goal','split','goalType','actLevel','unit','weight','waterGoal','stepGoal','onboarded',
    'favs','recents','custom','meals','bestStreak','ch','layout'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
   if(d.stats) S.stats={...S.stats,...d.stats};
@@ -1712,7 +1713,7 @@ function tombstone(d,id){
   const r=S.days[d];if(!r||!id) return;
   r._del=[...new Set([...(r._del||[]),id])].slice(-500);
 }
-function touchSettings(){settingsDirty=true;queueSync()}
+function touchSettings(){settingsDirty=true;S._su=now();queueSync()}
 function queueSync(){clearTimeout(syncT);syncT=setTimeout(()=>syncNow('edit'),1200)}
 
 function setSync(s,msg){SYNC=s;SYNC_MSG=msg||'';syncPill();renderAccount()}
@@ -1808,13 +1809,22 @@ async function pullMerge(){
       CLOUD.from('days').select('*').eq('user_id',ME.id).gte('date',since),
       CLOUD.from('weights').select('date,kg').eq('user_id',ME.id),
     ]);
-    // maybeSingle normally gives one row, but tolerate an array either way —
-    // silently mis-reading this would look exactly like a brand new account
+    // supabase-js reports failures on .error instead of throwing. Without this
+    // check a rejected read looked like an empty account, and signing in on a
+    // new device would start the whole setup again.
+    const bad=[st,dy,wt].find(r=>r&&r.error);
+    if(bad) throw bad.error;
+
+    // maybeSingle normally gives one row, but tolerate an array either way
     const srow=Array.isArray(st.data)?st.data[0]:st.data;
-    if(srow&&srow.data&&!settingsDirty) applySettings(srow.data);
+    const days=dy.data||[];
+    SERVER_ACCOUNT=!!(srow&&srow.data)||days.length>0;
+    // newest settings win; a device with no local copy always takes the server's
+    if(srow&&srow.data&&(!S._su||String(srow.updated_at||'')>String(S._su)))
+      applySettings(srow.data,srow.updated_at);
 
     let changed=false;
-    (dy.data||[]).forEach(r=>{
+    days.forEach(r=>{
       const server=normDay(r);
       const local=S.days[r.date];
       const merged=mergeDay(local,server);
@@ -1837,7 +1847,7 @@ async function pushDirty(){
   try{
     if(settingsDirty){
       const {error}=await CLOUD.from('settings')
-        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:now()});
+        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:S._su||now()});
       if(error) throw error;
       settingsDirty=false;
       await CLOUD.from('profiles').upsert({id:ME.id,display_name:S.name||'Friend',
@@ -1976,23 +1986,38 @@ async function onSignedIn(user){
   await CLOUD.from('profiles').upsert({id:ME.id,
     display_name:S.name||user.user_metadata?.display_name||user.email.split('@')[0],
     avatar:S.avatar,updated_at:new Date().toISOString()},{onConflict:'id'});
+  SERVER_ACCOUNT=false;
   const pulled=await pullMerge();
-  if(!S.name) S.name=user.user_metadata?.display_name||user.email.split('@')[0];
   await loadChallenge();
-  // anything created before signing in belongs to this account now
+
+  // Whether to run setup is the server's call, not this device's. A new phone,
+  // a new domain or a cleared browser all start with empty local storage, and
+  // none of them mean a new account.
+  const known=SERVER_ACCOUNT||S.onboarded;
+  if(known) S.onboarded=true;
+  if(!S.name) S.name=user.user_metadata?.display_name||user.email.split('@')[0];
+
   Object.keys(S.days).forEach(d=>DIRTY.add(d));
   Object.keys(S.weights).forEach(d=>WDIRTY.add(d));
-  settingsDirty=true;
   startHeartbeat();
-  // only treat this as a new account when the pull actually succeeded —
-  // otherwise a flaky connection would drop a returning user into setup
-  if(!S.onboarded&&(pulled||!S.name)){
+
+  if(!pulled){
+    // We could not read the account, so we cannot know. Never run setup here:
+    // finishing it would push blank defaults over settings that may be fine.
+    document.getElementById('onboard').classList.add('hidden');
+    render();goScreen('home');
+    toast('Signed in — could not load your data yet, retrying');
+    setSync('err',SYNC_MSG||'Could not load your account');
+    syncNow('signin');
+    return;
+  }
+  if(!known){
+    settingsDirty=true;           // genuinely new: safe to write defaults
     document.getElementById('ob-name').value=S.name||'';
     document.getElementById('onboard').classList.remove('hidden');
   }else{
     document.getElementById('onboard').classList.add('hidden');
     render();goScreen('home');
-    if(!pulled) toast('Signed in — couldn\u2019t reach your data yet, will retry');
   }
   syncNow('signin');
 }
