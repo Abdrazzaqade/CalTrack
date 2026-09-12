@@ -705,6 +705,67 @@ body{
 .tp-num{font-family:var(--mono);font-size:27px;font-weight:700;color:var(--accent);line-height:1}
 .tp-of{font-size:12px;color:var(--faint)}
 
+
+/* ══ Customisable home blocks ══ */
+.tile.tile-lg .tile-val{font-size:38px}
+.tile.tile-lg .tile-hd{margin-bottom:18px}
+.tile.tile-lg{padding:18px}
+.pts-card{cursor:pointer}
+.pts-card .tile-val{font-size:30px}
+.pts-card.lg .tile-val{font-size:38px}
+.add-block-btn{
+  width:100%;background:none;border:1px dashed rgba(255,255,255,.13);
+  border-radius:var(--r-md);color:var(--muted);font-family:var(--sans);
+  font-size:12px;font-weight:500;padding:13px;cursor:pointer;margin-top:4px;
+}
+.add-block-btn:active{border-color:rgba(195,245,63,.4);color:var(--accent)}
+
+/* customise mode */
+.cust-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--surface);border:1px solid rgba(195,245,63,.3);
+  border-radius:var(--r-md);padding:11px 14px;margin-bottom:14px;
+  position:sticky;top:0;z-index:20;
+}
+.cust-bar .cb-t{font-size:13px;font-weight:600}
+.cust-bar .cb-s{font-size:10.5px;color:var(--faint);margin-top:2px}
+.cust-done{
+  background:var(--accent);color:#0A0B10;border:none;border-radius:var(--r-sm);
+  padding:9px 16px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;
+}
+.cust-list{position:relative}
+.cust-row{
+  display:flex;align-items:center;gap:11px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:12px 13px;margin-bottom:8px;
+  touch-action:none;transition:transform .18s cubic-bezier(.2,0,0,1),box-shadow .15s,opacity .15s;
+}
+.cust-row.off{opacity:.45}
+.cust-row.drag{
+  transition:none;box-shadow:0 12px 30px rgba(0,0,0,.55);
+  border-color:rgba(195,245,63,.45);position:relative;z-index:5;
+}
+.cust-grip{
+  color:var(--faint);font-size:15px;line-height:1;cursor:grab;flex-shrink:0;
+  padding:4px 2px;letter-spacing:1px;
+}
+.cust-row.drag .cust-grip{cursor:grabbing;color:var(--accent)}
+.cust-ico{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.cust-name{flex:1;min-width:0;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cust-note{font-size:10px;color:var(--faint);margin-top:2px;font-weight:400}
+.size-seg{display:flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px;flex-shrink:0}
+.size-seg button{
+  background:none;border:none;color:var(--faint);font-family:var(--sans);
+  font-size:10px;font-weight:700;padding:5px 8px;border-radius:7px;cursor:pointer;
+}
+.size-seg button.on{background:var(--accent);color:#0A0B10}
+.eye-btn{
+  background:none;border:none;font-size:15px;cursor:pointer;padding:4px;
+  flex-shrink:0;opacity:.5;
+}
+.eye-btn.on{opacity:1}
+.cust-sec{margin:18px 2px 9px}
+
 /* ══ Toast & misc ══ */
 .toast{
   position:absolute;top:66px;left:50%;transform:translateX(-50%);
@@ -863,76 +924,8 @@ body{
     </div>
 
     <div id="readonly-slot"></div>
-
-    <div class="card">
-      <div class="ring-row">
-        <div class="ring-wrap">
-          <svg id="ring" width="136" height="136" viewBox="0 0 136 136">
-            <circle cx="68" cy="68" r="54" fill="none" stroke="var(--track)" stroke-width="10"/>
-          </svg>
-          <div class="ring-center">
-            <div class="ring-num" id="ring-n">0</div>
-            <div class="ring-cap" id="ring-cap">kcal left</div>
-            <div class="ring-goal" id="ring-goal">/ 2,000</div>
-          </div>
-        </div>
-        <div class="macro-list">
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--p)"></span>
-              <span class="macro-name">Protein</span>
-              <span class="macro-fig"><span id="mp-v">0</span><span class="of">/<span id="mp-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mp-bar" style="background:var(--p);width:0%"></div></div>
-          </div>
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--c)"></span>
-              <span class="macro-name">Carbs</span>
-              <span class="macro-fig"><span id="mc-v">0</span><span class="of">/<span id="mc-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mc-bar" style="background:var(--c);width:0%"></div></div>
-          </div>
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--f)"></span>
-              <span class="macro-name">Fat</span>
-              <span class="macro-fig"><span id="mf-v">0</span><span class="of">/<span id="mf-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mf-bar" style="background:var(--f);width:0%"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-strip">
-        <div class="stat-cell"><div class="sc-val" id="st-rem" style="color:var(--accent)">0</div><div class="sc-lbl">Remaining</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-con">0</div><div class="sc-lbl">Consumed</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-pro" style="color:var(--p)">0g</div><div class="sc-lbl">Protein left</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-brn" style="color:var(--c)">0</div><div class="sc-lbl">Burned</div></div>
-      </div>
-    </div>
-
-    <div class="sec-label"><span class="micro">Activity</span></div>
-    <div class="tile-grid">
-      <div class="tile" id="tile-water" onclick="openWater()">
-        <div class="tile-hd"><span class="micro">Water</span><span class="tile-icon" style="color:var(--water)">💧</span></div>
-        <div class="tile-val"><span id="wt-v">0</span><span class="tv-of"> /<span id="wt-g">8</span> cups</span></div>
-        <div class="tile-sub" id="wt-sub">0 L of 2 L</div>
-        <div class="tile-bar"><div class="tile-fill" id="wt-bar" style="background:var(--water);width:0%"></div></div>
-      </div>
-      <div class="tile" id="tile-steps" onclick="openSteps()">
-        <div class="tile-hd"><span class="micro">Steps</span><span class="tile-icon" style="color:var(--steps)">🚶</span></div>
-        <div class="tile-val" id="sp-v">0</div>
-        <div class="tile-sub" id="sp-sub">Goal 10,000</div>
-        <div class="tile-bar"><div class="tile-fill" id="sp-bar" style="background:var(--steps);width:0%"></div></div>
-      </div>
-    </div>
-
-    <div class="sec-label">
-      <span class="micro">Meals today</span>
-      <button class="sec-link" onclick="openFullLog()">Full log</button>
-    </div>
-    <div id="meals"></div>
+    <div id="cust-bar"></div>
+    <div id="home-blocks"></div>
   </div>
 
   <!-- ───── ACTIVITY ───── -->
@@ -1526,7 +1519,7 @@ let S={
  days:{},            // 'YYYY-MM-DD' -> {foods,acts,steps,water}
  legacy:{},          // pre-v5 daily totals, used by charts only
  bestStreak:0,favs:[],recents:[],custom:[],meals:[],
- ch:null,
+ ch:null,layout:null,
  stats:{totalFoods:0,daysLogged:0,maxSteps:0,maxWater:0,maxBurn:0,perfectDays:0,proteinDays:0},
 };
 let VIEW='';         // date currently on screen
@@ -1675,12 +1668,12 @@ function settingsBlob(){
   return {name:S.name,avatar:S.avatar,goal:S.goal,split:S.split,goalType:S.goalType,onboarded:S.onboarded,
     actLevel:S.actLevel,unit:S.unit,weight:S.weight,waterGoal:S.waterGoal,stepGoal:S.stepGoal,
     favs:S.favs,recents:S.recents,custom:S.custom,meals:S.meals,
-    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null};
+    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null};
 }
 function applySettings(d){
   if(!d) return;
   ['name','avatar','goal','split','goalType','actLevel','unit','weight','waterGoal','stepGoal','onboarded',
-   'favs','recents','custom','meals','bestStreak','ch'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
+   'favs','recents','custom','meals','bestStreak','ch','layout'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
   if(d.stats) S.stats={...S.stats,...d.stats};
 }
 
@@ -1890,7 +1883,7 @@ async function upsertDay(d,r){
 /* redraw without kicking off another sync */
 function softRender(){
   recomputeStats();
-  renderDayHeader();renderRing();renderTiles();renderMeals();
+  renderDayHeader();renderHome();
   renderActivity();
   if(document.getElementById('screen-progress').classList.contains('active')) renderProgress();
   if(document.getElementById('screen-profile').classList.contains('active')) renderProfile();
@@ -2090,7 +2083,7 @@ async function doInstall(){
 /* ══ RENDER ══ */
 function render(){
   recomputeStats();
-  renderDayHeader();renderRing();renderTiles();renderMeals();
+  renderDayHeader();renderHome();
   renderActivity();renderProgress();renderProfile();
   clock();save();renderAccount();renderInstall();
 }
@@ -2132,6 +2125,7 @@ function goToday(){VIEW=today();render()}
 
 function renderRing(){
   const svg=document.getElementById('ring');
+  if(!svg) return;   // the calories block can be hidden
   while(svg.children.length>1) svg.removeChild(svg.lastChild);
   const cx=68,cy=68,r=54,C=2*Math.PI*r,GAP=(3.5/360)*C;
   const m=macros(),eaten=inCal();
@@ -2174,16 +2168,20 @@ function renderRing(){
 }
 
 function renderTiles(){
-  const d=D();
-  const wg=S.waterGoal;
+  const d=D(),wg=S.waterGoal;
+  const has=id=>document.getElementById(id);
+  if(has('wt-v')){
   document.getElementById('wt-v').textContent=d.water;
   document.getElementById('wt-g').textContent=wg;
   document.getElementById('wt-bar').style.width=Math.min(100,d.water/wg*100)+'%';
   const L=x=>(Math.round(x*CUP_ML/100)/10).toFixed(1).replace(/\.0$/,'');
   document.getElementById('wt-sub').textContent=`${L(d.water)} L of ${L(wg)} L`;
-  document.getElementById('sp-v').textContent=d.steps.toLocaleString();
-  document.getElementById('sp-sub').textContent='Goal '+S.stepGoal.toLocaleString();
-  document.getElementById('sp-bar').style.width=Math.min(100,d.steps/S.stepGoal*100)+'%';
+  }
+  if(has('sp-v')){
+    document.getElementById('sp-v').textContent=d.steps.toLocaleString();
+    document.getElementById('sp-sub').textContent='Goal '+S.stepGoal.toLocaleString();
+    document.getElementById('sp-bar').style.width=Math.min(100,d.steps/S.stepGoal*100)+'%';
+  }
 }
 
 function fmtTime(t){
@@ -2195,6 +2193,7 @@ function fmtTime(t){
 }
 function renderMeals(){
   const box=document.getElementById('meals');
+  if(!box) return;   // the meals block can be hidden
   box.innerHTML='';
   const day=D();
   MEALS.forEach(M=>{
@@ -2283,6 +2282,300 @@ function renderActivity(){
   }
 }
 
+
+/* ══ CUSTOMISABLE HOME ═══════════════════════════════════════
+   The home screen is a list of blocks the user orders, resizes
+   and hides. Two consecutive half-width blocks pair into a row. */
+const BLOCKS={
+  ring:  {name:'Calories & macros', ico:'◎',  sizes:['full']},
+  water: {name:'Water',             ico:'💧', sizes:['half','full']},
+  steps: {name:'Steps',             ico:'🚶', sizes:['half','full']},
+  points:{name:'Challenge points',  ico:'🏆', sizes:['half','full'], note:'Appears once you join a challenge'},
+  week:  {name:'This week',         ico:'📊', sizes:['full']},
+  meals: {name:'Meals',             ico:'🍽️', sizes:['full']},
+};
+const DEFAULT_LAYOUT=[
+  {id:'ring',  on:true,  w:'full'},
+  {id:'water', on:true,  w:'half'},
+  {id:'steps', on:true,  w:'half'},
+  {id:'points',on:true,  w:'full'},
+  {id:'meals', on:true,  w:'full'},
+  {id:'week',  on:false, w:'full'},
+];
+function layout(){
+  // repair anything missing or renamed so a bad save can't empty the screen
+  const seen=new Set();
+  const out=(S.layout||[]).filter(b=>b&&BLOCKS[b.id]&&!seen.has(b.id)&&seen.add(b.id))
+    .map(b=>({id:b.id,on:b.on!==false,w:BLOCKS[b.id].sizes.includes(b.w)?b.w:BLOCKS[b.id].sizes[0]}));
+  DEFAULT_LAYOUT.forEach(d=>{if(!seen.has(d.id)) out.push({...d})});
+  return out;
+}
+function setLayout(l){S.layout=l;touchSettings();save()}
+
+const TPL={
+  ring: ()=>`<div class="card">
+      <div class="ring-row">
+        <div class="ring-wrap">
+          <svg id="ring" width="136" height="136" viewBox="0 0 136 136">
+            <circle cx="68" cy="68" r="54" fill="none" stroke="var(--track)" stroke-width="10"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num" id="ring-n">0</div>
+            <div class="ring-cap" id="ring-cap">kcal left</div>
+            <div class="ring-goal" id="ring-goal">/ 2,000</div>
+          </div>
+        </div>
+        <div class="macro-list">
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--p)"></span>
+              <span class="macro-name">Protein</span>
+              <span class="macro-fig"><span id="mp-v">0</span><span class="of">/<span id="mp-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mp-bar" style="background:var(--p);width:0%"></div></div>
+          </div>
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--c)"></span>
+              <span class="macro-name">Carbs</span>
+              <span class="macro-fig"><span id="mc-v">0</span><span class="of">/<span id="mc-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mc-bar" style="background:var(--c);width:0%"></div></div>
+          </div>
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--f)"></span>
+              <span class="macro-name">Fat</span>
+              <span class="macro-fig"><span id="mf-v">0</span><span class="of">/<span id="mf-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mf-bar" style="background:var(--f);width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-cell"><div class="sc-val" id="st-rem" style="color:var(--accent)">0</div><div class="sc-lbl">Remaining</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-con">0</div><div class="sc-lbl">Consumed</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-pro" style="color:var(--p)">0g</div><div class="sc-lbl">Protein left</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-brn" style="color:var(--c)">0</div><div class="sc-lbl">Burned</div></div>
+      </div>
+    </div>`,
+  water:()=>`<div class="tile" id="tile-water" onclick="openWater()">
+        <div class="tile-hd"><span class="micro">Water</span><span class="tile-icon" style="color:var(--water)">💧</span></div>
+        <div class="tile-val"><span id="wt-v">0</span><span class="tv-of"> /<span id="wt-g">8</span> cups</span></div>
+        <div class="tile-sub" id="wt-sub">0 L of 2 L</div>
+        <div class="tile-bar"><div class="tile-fill" id="wt-bar" style="background:var(--water);width:0%"></div></div>
+      </div>`,
+  steps:()=>`<div class="tile" id="tile-steps" onclick="openSteps()">
+        <div class="tile-hd"><span class="micro">Steps</span><span class="tile-icon" style="color:var(--steps)">🚶</span></div>
+        <div class="tile-val" id="sp-v">0</div>
+        <div class="tile-sub" id="sp-sub">Goal 10,000</div>
+        <div class="tile-bar"><div class="tile-fill" id="sp-bar" style="background:var(--steps);width:0%"></div></div>
+      </div>`,
+  meals:()=>`<div class="sec-label">
+      <span class="micro">Meals today</span>
+      <button class="sec-link" onclick="openFullLog()">Full log</button>
+    </div>
+    <div id="meals"></div>`,
+  points:w=>`<div class="card pts-card${w==='full'?' lg':''}" onclick="goScreen('community')">
+      <div class="tile-hd"><span class="micro">Challenge today</span><span class="tile-icon">🏆</span></div>
+      <div style="display:flex;align-items:baseline;gap:7px">
+        <span class="tile-val" id="hp-n">0</span><span class="tv-of">/ 4 points</span>
+      </div>
+      <div class="tile-sub" id="hp-sub"></div>
+      ${w==='full'?'<div class="pts-legend" id="hp-tags" style="margin-top:13px"></div>':''}
+    </div>`,
+  week: ()=>`<div class="card">
+      <div class="chart-hd"><h3>This week</h3><span class="ch-note" id="hw-avg">— avg</span></div>
+      <div class="chart-cap">Calories in · dashed line is your goal</div>
+      <div class="chart-area"><svg class="chart-svg" id="hw-chart" viewBox="0 0 320 118"></svg></div>
+    </div>`,
+};
+
+function renderHome(){
+  const box=document.getElementById('home-blocks');
+  if(!box) return;
+  if(CUST){renderCustomise();return}
+  const bar=document.getElementById('cust-bar');
+  bar.className='';bar.innerHTML='';
+  box.innerHTML='';
+  const L=layout().filter(b=>b.on);
+  for(let i=0;i<L.length;i++){
+    const b=L[i], next=L[i+1];
+    // a half-width block pairs with the next one if that is also half
+    if(b.w==='half'&&next&&next.w==='half'){
+      const row=document.createElement('div');
+      row.className='tile-grid';
+      row.innerHTML=TPL[b.id](b.w)+TPL[next.id](next.w);
+      box.appendChild(row);i++;
+    }else{
+      const wrap=document.createElement('div');
+      wrap.innerHTML=TPL[b.id](b.w==='half'?'full':b.w);
+      const node=wrap.firstElementChild;
+      if(b.w==='half'&&(b.id==='water'||b.id==='steps')) node.classList.add('tile-lg');
+      if(node&&node.classList.contains('tile')) node.classList.add('tile-lg');
+      box.appendChild(wrap.firstElementChild?node:wrap);
+      while(wrap.firstElementChild) box.appendChild(wrap.firstElementChild);
+    }
+  }
+  const add=document.createElement('button');
+  add.className='add-block-btn';
+  add.textContent='⚙  Customise home';
+  add.onclick=enterCustomise;
+  box.appendChild(add);
+
+  // long-press anywhere on the blocks also opens customise
+  let lp=null;
+  box.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button,input,select,a')) return;
+    lp=setTimeout(()=>{if(navigator.vibrate)navigator.vibrate(8);enterCustomise()},650);
+  });
+  ['pointerup','pointermove','pointercancel','scroll'].forEach(ev=>
+    box.addEventListener(ev,()=>{clearTimeout(lp)},{passive:true}));
+
+  renderRing();renderTiles();renderMeals();renderPoints();
+  if(document.getElementById('hw-chart')) drawWeek('hw-chart','hw-avg');
+}
+
+function renderPoints(){
+  const n=document.getElementById('hp-n');
+  if(!n) return;
+  const card=n.closest('.pts-card');
+  if(!S.ch){
+    if(card) card.style.display='none';
+    return;
+  }
+  if(card) card.style.display='';
+  n.textContent=pointsToday();
+  const sub=document.getElementById('hp-sub');
+  if(sub) sub.textContent=(S.ch.name||'').toUpperCase();
+  const tags=document.getElementById('hp-tags');
+  if(tags){
+    const g=macroGoals();
+    const pts=[
+      {t:'Food',ok:dIn(VIEW)>0},
+      {t:S.stepGoal.toLocaleString()+' steps',ok:dSteps(VIEW)>=S.stepGoal},
+      {t:g.p+'g protein',ok:dMacros(VIEW).p>=g.p&&g.p>0},
+      {t:S.waterGoal+' cups',ok:dWater(VIEW)>=S.waterGoal},
+    ];
+    tags.innerHTML=pts.map(p=>`<span class="pt-tag${p.ok?' hit':''}">${p.ok?'✓ ':''}${esc(p.t)}</span>`).join('');
+  }
+}
+
+/* ── customise mode ── */
+let CUST=false;
+function enterCustomise(){CUST=true;renderHome();document.querySelector('#screen-home').scrollTop=0}
+function exitCustomise(){CUST=false;renderHome()}
+
+function renderCustomise(){
+  const bar=document.getElementById('cust-bar');
+  bar.className='cust-bar';
+  bar.innerHTML=
+    `<div><div class="cb-t">Customise home</div><div class="cb-s">Drag to reorder · tap the eye to hide</div></div>
+     <button class="cust-done" onclick="exitCustomise()">Done</button>`;
+  const box=document.getElementById('home-blocks');
+  box.innerHTML='';
+  const list=document.createElement('div');
+  list.className='cust-list';list.id='cust-list';
+  layout().forEach(b=>list.appendChild(custRow(b)));
+  box.appendChild(list);
+  const note=document.createElement('div');
+  note.className='note';note.style.textAlign='center';note.style.marginTop='14px';
+  note.textContent='Two half-width blocks sitting next to each other share a row.';
+  box.appendChild(note);
+  const reset=document.createElement('button');
+  reset.className='add-block-btn';reset.textContent='Reset to default layout';
+  reset.onclick=()=>{if(confirm('Put the home screen back to its original layout?')){setLayout(DEFAULT_LAYOUT.map(d=>({...d})));renderCustomise()}};
+  box.appendChild(reset);
+}
+
+function custRow(b){
+  const meta=BLOCKS[b.id];
+  const row=document.createElement('div');
+  row.className='cust-row'+(b.on?'':' off');
+  row.dataset.id=b.id;
+  const showNote=meta.note&&b.id==='points'&&!S.ch;
+  row.innerHTML=`
+    <span class="cust-grip">⠿</span>
+    <span class="cust-ico">${meta.ico}</span>
+    <span class="cust-name">${esc(meta.name)}${showNote?`<div class="cust-note">${esc(meta.note)}</div>`:''}</span>
+    ${meta.sizes.length>1?`<span class="size-seg">
+        <button data-w="half" class="${b.w==='half'?'on':''}">½</button>
+        <button data-w="full" class="${b.w==='full'?'on':''}">Full</button>
+      </span>`:''}
+    <button class="eye-btn${b.on?' on':''}" title="${b.on?'Hide':'Show'}">${b.on?'👁':'🚫'}</button>`;
+  row.querySelectorAll('.size-seg button').forEach(btn=>btn.onclick=e=>{
+    e.stopPropagation();
+    const L=layout();L.find(x=>x.id===b.id).w=btn.dataset.w;
+    setLayout(L);renderCustomise();
+  });
+  row.querySelector('.eye-btn').onclick=e=>{
+    e.stopPropagation();
+    const L=layout();const t=L.find(x=>x.id===b.id);t.on=!t.on;
+    setLayout(L);renderCustomise();
+  };
+  row.querySelector('.cust-grip').addEventListener('pointerdown',e=>startDrag(e,row));
+  return row;
+}
+
+/* Pointer-event drag. HTML5 drag-and-drop does nothing on iOS Safari,
+   so the row is moved with a transform and swapped with whichever
+   neighbour's midpoint it crosses. */
+function startDrag(e,row){
+  e.preventDefault();
+  const list=document.getElementById('cust-list');
+  const screen=document.querySelector('#screen-home');
+  let startY=e.clientY, dy=0;
+  row.classList.add('drag');
+  row.setPointerCapture?.(e.pointerId);
+
+  const move=ev=>{
+    dy=ev.clientY-startY;
+    row.style.transform=`translateY(${dy}px)`;
+    const rect=row.getBoundingClientRect();
+    const mid=rect.top+rect.height/2;
+    for(const sib of [...list.children]){
+      if(sib===row) continue;
+      const r=sib.getBoundingClientRect();
+      const smid=r.top+r.height/2;
+      // is the dragged row currently below this sibling in the DOM?
+      const rowIsAfter=!!(sib.compareDocumentPosition(row)&Node.DOCUMENT_POSITION_FOLLOWING);
+      if(rowIsAfter&&mid<smid){          // dragged up past it
+        list.insertBefore(row,sib);
+        // the row's resting position just moved, so shift the origin
+        // by the same amount or it jumps under the finger
+        startY-=r.height+8;
+        dy=ev.clientY-startY;row.style.transform=`translateY(${dy}px)`;
+        break;
+      }
+      if(!rowIsAfter&&mid>smid){         // dragged down past it
+        list.insertBefore(sib,row);
+        startY+=r.height+8;
+        dy=ev.clientY-startY;row.style.transform=`translateY(${dy}px)`;
+        break;
+      }
+    }
+    // nudge the page when dragging near an edge
+    const sr=screen.getBoundingClientRect();
+    if(ev.clientY<sr.top+70) screen.scrollTop-=8;
+    else if(ev.clientY>sr.bottom-70) screen.scrollTop+=8;
+  };
+  const up=ev=>{
+    row.classList.remove('drag');
+    row.style.transform='';
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+    document.removeEventListener('pointercancel',up);
+    const order=[...list.children].map(c=>c.dataset.id);
+    const L=layout();
+    setLayout(order.map(id=>L.find(x=>x.id===id)).filter(Boolean));
+    if(navigator.vibrate) navigator.vibrate(5);
+  };
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
+}
+
 /* ══ CHARTS ══ */
 const NS='http://www.w3.org/2000/svg';
 function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e}
@@ -2298,8 +2591,10 @@ function renderProgress(){
   weekChart();weightChart();
 }
 
-function weekChart(){
-  const svg=document.getElementById('wk-chart');
+function weekChart(){drawWeek('wk-chart','wk-avg')}
+function drawWeek(svgId,avgId){
+  const svg=document.getElementById(svgId);
+  if(!svg) return;
   svg.innerHTML='';
   const W=320,PLOT=92;
   const days=[];
@@ -2329,7 +2624,8 @@ function weekChart(){
   });
   const on=days.filter(d=>d.v>0);
   const avg=on.length?Math.round(on.reduce((a,d)=>a+d.v,0)/on.length):0;
-  document.getElementById('wk-avg').textContent=avg?avg.toLocaleString()+' avg':'— avg';
+  const a=document.getElementById(avgId);
+  if(a) a.textContent=avg?avg.toLocaleString()+' avg':'— avg';
 }
 
 function weightChart(){
@@ -2680,6 +2976,8 @@ function goScreen(id){
   document.getElementById('screen-'+id).classList.add('active');
   const n=document.getElementById('nav-'+id);if(n)n.classList.add('active');
   document.querySelector('.fab').classList.toggle('hide',id==='profile'||id==='community');
+  if(id!=='home'&&CUST) CUST=false;
+  if(id==='home') renderHome();
   if(id==='progress') renderProgress();
   if(id==='profile') renderProfile();
   if(id==='activity') renderActivity();
@@ -3156,7 +3454,7 @@ function wLitres(){
 }
 function addWater(n){
   const d=D();d.water=Math.max(0,Math.min(40,d.water+n));touch(VIEW,'water');
-  document.getElementById('w-n').textContent=d.water;wLitres();renderTiles();save();
+  document.getElementById('w-n').textContent=d.water;wLitres();renderTiles();renderPoints();save();
 }
 function openSteps(){document.getElementById('s-in').value=D().steps||'';open('ov-steps')}
 function saveSteps(){D().steps=Math.max(0,parseInt(document.getElementById('s-in').value)||0);touch(VIEW,'steps');closeAll();render()}
