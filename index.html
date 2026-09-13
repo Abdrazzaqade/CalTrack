@@ -766,6 +766,32 @@ body{
 .eye-btn.on{opacity:1}
 .cust-sec{margin:18px 2px 9px}
 
+/* ══ Measured maintenance card ══ */
+.ad-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:15px;margin-bottom:7px;
+}
+.ad-card.ready{border-color:rgba(195,245,63,.35);background:rgba(195,245,63,.045)}
+.ad-hd{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.ad-hd .ad-t{font-size:13.5px;font-weight:600;flex:1}
+.ad-big{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);line-height:1}
+.ad-sub{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:7px}
+.ad-bars{display:flex;flex-direction:column;gap:9px;margin-top:11px}
+.ad-bar-row{display:flex;align-items:center;gap:10px}
+.ad-bar-lbl{font-size:10.5px;color:var(--faint);width:96px;flex-shrink:0}
+.ad-bar{flex:1;height:5px;background:var(--track);border-radius:3px;overflow:hidden}
+.ad-bar span{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.ad-bar-n{font-family:var(--mono);font-size:10.5px;color:var(--muted);width:40px;text-align:right;flex-shrink:0}
+.ad-actions{display:flex;gap:8px;margin-top:13px}
+.ad-actions button{
+  flex:1;border-radius:var(--r-sm);padding:11px;font-family:var(--sans);
+  font-size:12.5px;font-weight:600;cursor:pointer;border:none;
+}
+.ad-yes{background:var(--accent);color:#0A0B10}
+.ad-no{background:var(--surface-3);color:var(--muted)}
+.ad-off{background:none;border:none;color:var(--faint);font-family:var(--sans);
+  font-size:11.5px;cursor:pointer;padding:8px 0 0}
+
 /* ══ Toast & misc ══ */
 .toast{
   position:absolute;top:66px;left:50%;transform:translateX(-50%);
@@ -1064,6 +1090,7 @@ body{
         <div class="row-left"><span class="row-ico">🧮</span><span class="row-lbl">Working</span></div>
         <div class="row-val num" id="pf-calc" style="text-align:right;white-space:normal;max-width:62%;font-size:11px;line-height:1.7"></div>
       </div>
+      <div id="pf-adapt"></div>
       <button class="text-link" id="recalc-btn" onclick="recalcGoal()">↻ Recalculate from weight &amp; activity</button>
     </div>
 
@@ -1561,9 +1588,74 @@ function bmr(){
   const c=S.sex==='male'?5:S.sex==='female'?-161:-78;     // -78 = midpoint
   return Math.round(10*S.weight+6.25*S.height-5*S.age+c);
 }
-function maintenance(){
+function maintenanceFormula(){
   const b=bmr();
   return b?Math.round(b*((LIFESTYLE[S.actLevel]||LIFESTYLE.light).m)):null;
+}
+function maintenance(){
+  if(S.adaptive){const a=adaptive();if(a.ok) return a.baseline}
+  return maintenanceFormula();
+}
+
+/* ── Measured maintenance ─────────────────────────────────────
+   Every equation is a population average applied to one person.
+   Given enough logged days and weigh-ins we can do better and just
+   read it off: whatever you ate, minus the energy your weight
+   actually moved by, is what you actually burned.
+
+       expenditure = mean intake − (weight change × 7700 / days)
+
+   Two details matter. Weight is fitted with a least-squares line
+   rather than measured end-to-end, because a single reading swings
+   a kilo on water alone. And logged exercise is subtracted back out,
+   because the app credits workouts on top of the goal — leaving it
+   in would double count all over again.
+
+   The result inherits your logging habits: if you under-record by
+   10%, so does this. That is a feature for setting a target, since
+   it is the number that predicts your weight given how you log. */
+const AD={WINDOW:28,MIN_LOGGED:14,MIN_WEIGHS:4,MIN_SPAN:14};
+let DATA_REV=0,_adCache=null,_adKey='';
+function adaptive(){
+  const key=DATA_REV+'|'+today()+'|'+S.actLevel+'|'+(S.weight||0);
+  if(_adKey===key&&_adCache) return _adCache;
+  const end=today(),start=addDays(end,-(AD.WINDOW-1));
+  const ws=Object.keys(S.weights).filter(d=>d>=start&&d<=end).sort();
+  const logDays=[];
+  for(let i=0;i<AD.WINDOW;i++){const d=addDays(end,-i);if(dIn(d)>0) logDays.push(d)}
+  const span=ws.length>1?Math.round((parseD(ws[ws.length-1])-parseD(ws[0]))/864e5):0;
+  const r={ok:false,reason:'',logged:logDays.length,weighIns:ws.length,span,
+           need:{logged:AD.MIN_LOGGED,weighIns:AD.MIN_WEIGHS,span:AD.MIN_SPAN}};
+
+  if(ws.length<AD.MIN_WEIGHS)      r.reason=`${AD.MIN_WEIGHS - ws.length} more weigh-in${AD.MIN_WEIGHS-ws.length===1?'':'s'} needed`;
+  else if(span<AD.MIN_SPAN)        r.reason=`weigh-ins need to span ${AD.MIN_SPAN} days — yours cover ${span}`;
+  else if(logDays.length<AD.MIN_LOGGED) r.reason=`${AD.MIN_LOGGED-logDays.length} more day${AD.MIN_LOGGED-logDays.length===1?'':'s'} of food logging needed`;
+  if(r.reason){_adKey=key;_adCache=r;return r}
+
+  // least-squares slope, kg per day
+  const t0=parseD(ws[0]).getTime();
+  const pts=ws.map(d=>({x:(parseD(d).getTime()-t0)/864e5,y:S.weights[d]}));
+  const n=pts.length;
+  const sx=pts.reduce((a,p)=>a+p.x,0), sy=pts.reduce((a,p)=>a+p.y,0);
+  const sxx=pts.reduce((a,p)=>a+p.x*p.x,0), sxy=pts.reduce((a,p)=>a+p.x*p.y,0);
+  const den=n*sxx-sx*sx;
+  if(!den){r.reason='weigh-ins are all on the same day';_adKey=key;_adCache=r;return r}
+  const slope=(n*sxy-sx*sy)/den;
+
+  const meanIn=Math.round(logDays.reduce((a,d)=>a+dIn(d),0)/logDays.length);
+  const meanEx=Math.round(logDays.reduce((a,d)=>a+dOut(d),0)/logDays.length);
+  const observed=Math.round(meanIn-slope*KCAL_PER_KG);
+  const baseline=Math.round(observed-meanEx);
+
+  const f=maintenanceFormula();
+  if(baseline<800||(f&&(baseline/f<0.6||baseline/f>1.6))){
+    r.reason='the numbers look off — check for missed days or a stray weigh-in';
+    r.observed=observed;r.baseline=baseline;
+    _adKey=key;_adCache=r;return r;
+  }
+  Object.assign(r,{ok:true,slopeWeek:Math.round(slope*7*100)/100,
+    meanIn,meanEx,observed,baseline,formula:f});
+  _adKey=key;_adCache=r;return r;
 }
 const weeklyRate=()=>Math.abs(Number(S.rate)||0);
 const dailyDelta=()=>Math.round(weeklyRate()*KCAL_PER_KG/7);
@@ -1622,7 +1714,7 @@ let S={
  days:{},            // 'YYYY-MM-DD' -> {foods,acts,steps,water}
  legacy:{},          // pre-v5 daily totals, used by charts only
  bestStreak:0,favs:[],recents:[],custom:[],meals:[],
- ch:null,layout:null,_su:null,autoGoal:true,
+ ch:null,layout:null,_su:null,autoGoal:true,adaptive:false,
  stats:{totalFoods:0,daysLogged:0,maxSteps:0,maxWater:0,maxBurn:0,perfectDays:0,proteinDays:0},
 };
 let VIEW='';         // date currently on screen
@@ -1785,13 +1877,13 @@ function settingsBlob(){
     actLevel:S.actLevel,unit:S.unit,weight:S.weight,height:S.height,age:S.age,sex:S.sex,rate:S.rate,
     waterGoal:S.waterGoal,stepGoal:S.stepGoal,
     favs:S.favs,recents:S.recents,custom:S.custom,meals:S.meals,
-    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null,autoGoal:S.autoGoal!==false};
+    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null,autoGoal:S.autoGoal!==false,adaptive:!!S.adaptive,adaptSnooze:S.adaptSnooze||null};
 }
 function applySettings(d,stamp){
   if(!d) return;
   if(stamp) S._su=stamp;
   ['name','avatar','goal','split','goalType','actLevel','unit','weight','height','age','sex','rate','waterGoal','stepGoal','onboarded',
-   'favs','recents','custom','meals','bestStreak','ch','layout','autoGoal'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
+   'favs','recents','custom','meals','bestStreak','ch','layout','autoGoal','adaptive','adaptSnooze'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
   if(d.stats) S.stats={...S.stats,...d.stats};
 }
 
@@ -1824,7 +1916,7 @@ function touch(d,field){
     if(field==='steps') r._us=r._u;
     if(field==='water') r._uw=r._u;
   }
-  DIRTY.add(d);queueSync();
+  DIRTY.add(d);DATA_REV++;queueSync();
 }
 function tombstone(d,id){
   const r=S.days[d];if(!r||!id) return;
@@ -1954,7 +2046,7 @@ async function pullMerge(){
     if(ks.length) S.weight=S.weights[ks[ks.length-1]];
 
     save();
-    if(changed) softRender();
+    if(changed){DATA_REV++;softRender()}
     return true;
   }catch(e){console.warn('pull failed',e);SYNC_MSG=why(e);return false}
 }
@@ -2805,7 +2897,14 @@ function weightChart(){
   const diff=pts[pts.length-1].w-pts[0].w;
   del.textContent=(diff>0?'+':'')+fmtW(diff);
   del.style.color=Math.abs(diff)<.05?'var(--muted)':(S.goalType==='build'?(diff>0?'var(--accent)':'var(--muted)'):(diff<0?'var(--accent)':'var(--muted)'));
-  cap.textContent=`${pts.length} entries · now ${fmtW(pts[pts.length-1].w)}`;
+  const trend=adaptive();
+  let line=`${pts.length} entries · now ${fmtW(pts[pts.length-1].w)}`;
+  if(trend.slopeWeek!==undefined){
+    const dir=trend.slopeWeek<0?'losing':trend.slopeWeek>0?'gaining':'steady';
+    line+=` · ${dir} ${fmtRate(Math.abs(trend.slopeWeek))}/wk`;
+    if(S.goalType!=='maintain') line+=` (target ${fmtRate(actualRate())}/wk)`;
+  }
+  cap.textContent=line;
 }
 function shortD(k){const d=parseD(k);return d.getDate()+' '+MON[d.getMonth()]}
 
@@ -2827,14 +2926,21 @@ function renderProfile(){
     const near=opts.reduce((a,o)=>Math.abs(o.kg-S.rate)<Math.abs(a.kg-S.rate)?o:a,opts[0]);
     rs.value=String(near.kg);
   }
+  renderAdaptive();
   const calc=document.getElementById('pf-calc');
   if(calc){
     const b=bmr(),m=maintenance();
     if(!m) calc.textContent='Add your weight to estimate this';
     else{
-      const parts=[`Resting ${b.toLocaleString()}`,
-                   `× ${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} daily life`,
-                   `= ${m.toLocaleString()} maintenance`];
+      const ad=adaptive();
+      const measured=S.adaptive&&ad.ok;
+      const parts=measured
+        ? [`Measured over 28 days`,
+           `ate ${ad.meanIn.toLocaleString()}, trend ${ad.slopeWeek<0?'−':'+'}${fmtRate(Math.abs(ad.slopeWeek))}/wk`,
+           `= ${m.toLocaleString()} maintenance`]
+        : [`Resting ${b.toLocaleString()}`,
+           `× ${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} daily life`,
+           `= ${m.toLocaleString()} maintenance`];
       if(S.goalType!=='maintain') parts.push(`${S.goalType==='cut'?'−':'+'} ${dailyDelta()} for ${fmtRate(weeklyRate())}/wk`);
       if(noDeficitPossible()) parts.push('maintenance is near the 1,200 minimum — no deficit applied');
       else if(rateCapped()) parts.push(`capped at 25% — about ${fmtRate(actualRate())}/wk`);
@@ -2851,6 +2957,84 @@ function renderProfile(){
   document.getElementById('pf-weight').textContent=S.weight?fmtW(S.weight):'—';
   document.getElementById('pf-emoji').textContent=S.avatar;
   document.querySelectorAll('.split-chip').forEach(c=>c.classList.toggle('active',c.dataset.split===S.split));
+}
+
+function renderAdaptive(){
+  const box=document.getElementById('pf-adapt');
+  if(!box) return;
+  if(!S.weight){box.innerHTML='';return}
+  const a=adaptive(), f=maintenanceFormula();
+  const pct=(n,d)=>Math.min(100,Math.round(n/d*100));
+
+  if(S.adaptive&&a.ok){
+    box.innerHTML=`<div class="ad-card ready">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured from your data</span></div>
+      <div class="ad-big">${a.baseline.toLocaleString()}<span style="font-size:12px;color:var(--faint)"> kcal</span></div>
+      <div class="ad-sub">From your last 28 days: you averaged ${a.meanIn.toLocaleString()} kcal
+        and your weight trend is ${trendWord(a.slopeWeek)}.
+        ${f?`The formula guessed ${f.toLocaleString()}.`:''}</div>
+      <button class="ad-off" onclick="useAdaptive(false)">Go back to the formula</button>
+    </div>`;
+    return;
+  }
+  if(S.adaptive&&!a.ok){
+    box.innerHTML=`<div class="ad-card">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured maintenance paused</span></div>
+      <div class="ad-sub">Using the formula for now — ${esc(a.reason)}.</div>
+      <button class="ad-off" onclick="useAdaptive(false)">Turn this off</button>
+    </div>`;
+    return;
+  }
+  if(a.ok&&S.adaptSnooze&&S.adaptSnooze>addDays(today(),-7)){
+    box.innerHTML=`<div class="ad-card">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured maintenance is ready</span></div>
+      <div class="ad-sub">Your data suggests ${a.baseline.toLocaleString()} kcal.</div>
+      <div class="ad-actions"><button class="ad-yes" onclick="useAdaptive(true)">Use my data</button></div>
+    </div>`;
+    return;
+  }
+  if(a.ok){
+    const diff=f?a.baseline-f:0;
+    box.innerHTML=`<div class="ad-card ready">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Your data disagrees with the formula</span></div>
+      <div class="ad-big">${a.baseline.toLocaleString()}<span style="font-size:12px;color:var(--faint)"> kcal</span></div>
+      <div class="ad-sub">Over 28 days you averaged ${a.meanIn.toLocaleString()} kcal a day and your weight
+        trend is ${trendWord(a.slopeWeek)} — which puts your real
+        maintenance ${f?`${Math.abs(diff)} kcal ${diff>0?'above':'below'} the ${f.toLocaleString()} the equation predicted`:'at this level'}.</div>
+      <div class="ad-actions">
+        <button class="ad-no" onclick="dismissAdaptive()">Not now</button>
+        <button class="ad-yes" onclick="useAdaptive(true)">Use my data</button>
+      </div>
+    </div>`;
+    return;
+  }
+  // still learning
+  box.innerHTML=`<div class="ad-card">
+    <div class="ad-hd"><span>📈</span><span class="ad-t">Learning your metabolism</span></div>
+    <div class="ad-sub">Keep logging and weighing in and the app will work out your real maintenance
+      from what actually happens, instead of estimating it.</div>
+    <div class="ad-bars">
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Days logged</span>
+        <span class="ad-bar"><span style="width:${pct(a.logged,a.need.logged)}%"></span></span>
+        <span class="ad-bar-n">${a.logged}/${a.need.logged}</span></div>
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Weigh-ins</span>
+        <span class="ad-bar"><span style="width:${pct(a.weighIns,a.need.weighIns)}%"></span></span>
+        <span class="ad-bar-n">${a.weighIns}/${a.need.weighIns}</span></div>
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Days covered</span>
+        <span class="ad-bar"><span style="width:${pct(a.span,a.need.span)}%"></span></span>
+        <span class="ad-bar-n">${a.span}/${a.need.span}</span></div>
+    </div>
+  </div>`;
+}
+function useAdaptive(on){
+  S.adaptive=!!on;
+  if(on) S.autoGoal=true;
+  if(S.autoGoal!==false) S.goal=estimateGoal();
+  touchSettings();render();
+  toast(on?'Goal set to '+S.goal.toLocaleString()+' kcal from your data':'Back to the formula');
+}
+function dismissAdaptive(){
+  S.adaptSnooze=today();touchSettings();render();
 }
 
 /* ══ FULL LOG ══ */
@@ -3638,7 +3822,7 @@ function saveWeight(){
   if(!v||v<=0){toast('Enter a weight');return}
   const kg=toKg(v);
   if(kg<20||kg>400){toast('That looks off — check the unit');return}
-  S.weights[d]=kg;WDIRTY.add(d);queueSync();
+  S.weights[d]=kg;DATA_REV++;WDIRTY.add(d);queueSync();
   if(d>=Object.keys(S.weights).sort().pop()) S.weight=kg;
   closeAll();render();renderProgress();toast('Weight logged');
 }
@@ -3839,6 +4023,10 @@ function obResults(){
   }else if(maint&&rateCapped()){
     warn.textContent=`Deficits are capped at a quarter of maintenance, so this has been eased to about ${fmtRate(actualRate())} a week.`;
   }else{warn.textContent='';}
+}
+function trendWord(slopeWeek){
+  if(Math.abs(slopeWeek)<0.03) return 'flat';
+  return `${slopeWeek<0?'down':'up'} ${fmtRate(Math.abs(slopeWeek))} a week`;
 }
 function fmtRate(kg){
   return S.unit==='lb' ? (Math.round(kg*2.20462*10)/10)+' lb' : (Math.round(kg*100)/100)+' kg';
