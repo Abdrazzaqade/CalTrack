@@ -1928,9 +1928,11 @@ function queueSync(){clearTimeout(syncT);syncT=setTimeout(()=>syncNow('edit'),12
 function setSync(s,msg){SYNC=s;SYNC_MSG=msg||'';syncPill();renderAccount()}
 function why(e){
   const m=String((e&&e.message)||e||'');
-  if(/schema cache|column .* does not exist/i.test(m)) return 'Database is missing a column — run the latest migration SQL';
-  if(/row-level security/i.test(m))                    return 'Blocked by a database policy — re-run the schema SQL';
-  if(/relation .* does not exist/i.test(m))            return 'A table is missing — run the schema SQL';
+  if(/permission denied for (table|schema|relation)/i.test(m))
+    return 'Database grants missing — re-run supabase-schema.sql (section 5)';
+  if(/schema cache|column .* does not exist/i.test(m)) return 'Database is missing a column — re-run supabase-schema.sql';
+  if(/row-level security/i.test(m))                    return 'Blocked by a database policy — re-run supabase-schema.sql';
+  if(/relation .* does not exist/i.test(m))            return 'A table is missing — re-run supabase-schema.sql';
   if(/JWT|token|expired/i.test(m))                     return 'Session expired — sign out and back in';
   if(/Failed to fetch|NetworkError|load failed/i.test(m)) return 'No connection to Supabase';
   return m.slice(0,90);
