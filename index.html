@@ -846,40 +846,60 @@ body{
   </div>
 
   <div class="ob-step" id="ob-3">
-    <div class="ob-ico">⚡</div>
-    <div class="ob-title">How active are you?</div>
-    <div class="ob-sub">On a typical week, not counting workouts you log here.</div>
-    <div class="ob-opts">
-      <div class="ob-opt" data-act="sedentary" onclick="obPick(this,'act')"><div class="oo-t">Sedentary</div><div class="oo-s">Desk job, little exercise</div></div>
-      <div class="ob-opt" data-act="light" onclick="obPick(this,'act')"><div class="oo-t">Lightly active</div><div class="oo-s">1–3 days a week</div></div>
-      <div class="ob-opt" data-act="moderate" onclick="obPick(this,'act')"><div class="oo-t">Moderately active</div><div class="oo-s">3–5 days a week</div></div>
-      <div class="ob-opt" data-act="active" onclick="obPick(this,'act')"><div class="oo-t">Very active</div><div class="oo-s">6–7 days a week</div></div>
+    <div class="ob-ico">📐</div>
+    <div class="ob-title">A few numbers</div>
+    <div class="ob-sub">These feed the standard equation for resting metabolism. The more you give, the closer the estimate.</div>
+    <div class="g2">
+      <div class="fld"><label class="micro">Weight</label>
+        <div class="portion"><input class="ob-in" id="ob-weight" type="number" inputmode="decimal" step="0.1" placeholder="70">
+        <select class="ob-in" id="ob-unit" style="width:80px;padding:14px 8px"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+      <div class="fld"><label class="micro">Age</label>
+        <input class="ob-in" id="ob-age" type="number" inputmode="numeric" placeholder="30"></div>
     </div>
-    <div class="ob-foot"><button class="ob-next" onclick="obNext(3)">CONTINUE</button></div>
+    <div class="fld"><label class="micro">Height</label>
+      <div class="portion">
+        <input class="ob-in" id="ob-h1" type="number" inputmode="numeric" placeholder="170">
+        <input class="ob-in" id="ob-h2" type="number" inputmode="numeric" placeholder="in" hidden>
+        <select class="ob-in" id="ob-hunit" style="width:98px;padding:14px 8px" onchange="obHUnit()">
+          <option value="cm">cm</option><option value="ft">ft / in</option></select>
+      </div>
+    </div>
+    <div class="fld"><label class="micro">Sex at birth</label>
+      <select class="ob-in" id="ob-sex">
+        <option value="">Prefer not to say</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+      <div class="note">Used only in the metabolism formula, where it is worth about 165 kcal. Left blank it takes the midpoint.</div>
+    </div>
+    <div class="ob-foot">
+      <button class="ob-next" onclick="obNext(3)">CONTINUE</button>
+      <button class="ob-skip" onclick="obSkipWeight()">Skip — I'll set my own target</button>
+    </div>
   </div>
 
   <div class="ob-step" id="ob-4">
-    <div class="ob-ico">⚖️</div>
-    <div class="ob-title">Your weight</div>
-    <div class="ob-sub">Used to estimate your maintenance calories. Skip it and set a target yourself instead.</div>
-    <div class="g2">
-      <input class="ob-in" id="ob-weight" type="number" inputmode="decimal" step="0.1" placeholder="e.g. 70">
-      <select class="ob-in" id="ob-unit"><option value="kg">kg</option><option value="lb">lb</option></select>
-    </div>
-    <div class="note">Weight stays on your device. It is never shared to the leaderboard.</div>
-    <div class="ob-foot">
-      <button class="ob-next" onclick="obNext(4)">CONTINUE</button>
-      <button class="ob-skip" onclick="obSkipWeight()">Skip for now</button>
-    </div>
+    <div class="ob-ico">🚶</div>
+    <div class="ob-title">Your typical day</div>
+    <div class="ob-sub">Your job and daily life only. Workouts and steps you log get added on top, so don't count them twice.</div>
+    <div class="ob-opts" id="ob-life"></div>
+    <div class="ob-foot"><button class="ob-next" onclick="obNext(4)">CONTINUE</button></div>
   </div>
 
   <div class="ob-step" id="ob-5">
-    <div class="ob-ico">🎉</div>
-    <div class="ob-title">Your plan is ready</div>
-    <div class="ob-sub" id="ob-basis">Based on your goal and activity level.</div>
+    <div class="ob-ico">🎯</div>
+    <div class="ob-title">Your plan</div>
+    <div class="ob-sub" id="ob-basis">Based on your goal and daily life.</div>
+
+    <div class="fld" id="ob-rate-wrap">
+      <label class="micro" id="ob-rate-lbl">How fast?</label>
+      <div class="split-chips" id="ob-rates"></div>
+    </div>
+
     <div class="ob-res">
       <div class="micro">Daily calorie goal</div>
       <div style="margin-top:8px"><span class="obr-v" id="ob-cal">2000</span><span class="obr-u">KCAL</span></div>
+      <div class="note" id="ob-break" style="margin-top:9px"></div>
     </div>
     <div class="ob-res">
       <div class="micro">Macro targets</div>
@@ -889,7 +909,7 @@ body{
         <div class="obm-i"><div class="obm-v" id="ob-f" style="color:var(--f)">67g</div><div class="micro obm-l">Fat</div></div>
       </div>
     </div>
-    <div class="note">You can change any of this later in Profile.</div>
+    <div class="note" id="ob-warn"></div>
     <div class="ob-foot"><button class="ob-next" onclick="finishOnboard()">START TRACKING</button></div>
   </div>
 </div>
@@ -1031,10 +1051,18 @@ body{
           <option value="cut">Lose weight</option><option value="maintain">Maintain</option><option value="build">Build muscle</option></select></div>
       </div>
       <div class="row">
-        <div class="row-left"><span class="row-ico">⚡</span><span class="row-lbl">Activity level</span></div>
+        <div class="row-left"><span class="row-ico">🚶</span><span class="row-lbl">Typical day</span></div>
         <div class="row-val"><select id="pf-alevel" onchange="setActLevel()">
-          <option value="sedentary">Sedentary</option><option value="light">Light</option>
-          <option value="moderate">Moderate</option><option value="active">Very active</option></select></div>
+          <option value="desk">Mostly sitting</option><option value="light">Up and about</option>
+          <option value="onfeet">On your feet</option><option value="physical">Physical work</option></select></div>
+      </div>
+      <div class="row" id="pf-rate-row">
+        <div class="row-left"><span class="row-ico">📉</span><span class="row-lbl">Target rate</span></div>
+        <div class="row-val"><select id="pf-rate" onchange="setRate()"></select></div>
+      </div>
+      <div class="row" style="align-items:flex-start">
+        <div class="row-left"><span class="row-ico">🧮</span><span class="row-lbl">Working</span></div>
+        <div class="row-val num" id="pf-calc" style="text-align:right;white-space:normal;max-width:62%;font-size:11px;line-height:1.7"></div>
       </div>
       <button class="text-link" id="recalc-btn" onclick="recalcGoal()">↻ Recalculate from weight &amp; activity</button>
     </div>
@@ -1064,6 +1092,19 @@ body{
       <div class="row">
         <div class="row-left"><span class="row-ico">⚖️</span><span class="row-lbl">Weight unit</span></div>
         <div class="row-val"><select id="pf-unit" onchange="setUnit()"><option value="kg">kg</option><option value="lb">lb</option></select></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">📏</span><span class="row-lbl">Height</span></div>
+        <div class="row-val"><input type="number" inputmode="numeric" id="pf-height" onchange="setHeight()"><span style="font-size:11px">cm</span></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">🎂</span><span class="row-lbl">Age</span></div>
+        <div class="row-val"><input type="number" inputmode="numeric" id="pf-age" onchange="setAge()"></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">⚗️</span><span class="row-lbl">Sex at birth</span></div>
+        <div class="row-val"><select id="pf-sex" onchange="setSex()">
+          <option value="">Not set</option><option value="female">Female</option><option value="male">Male</option></select></div>
       </div>
       <div class="row" style="cursor:pointer" onclick="openWeight()">
         <div class="row-left"><span class="row-ico">📈</span><span class="row-lbl">Log weight</span></div>
@@ -1490,7 +1531,69 @@ const ACTS=[
  {name:'Dance',icon:'💃',rate:5},{name:'Tennis',icon:'🎾',rate:7},
 ];
 
-const SPLITS={balanced:{p:.30,c:.40,f:.30},'high-protein':{p:.40,c:.30,f:.30},'low-carb':{p:.35,c:.25,f:.40}};
+/* Protein is prescribed per kilo of bodyweight, not as a share of calories —
+   a percentage target shrinks exactly when you cut, which is when you most
+   need it held up. Carbs and fat then divide whatever calories are left.
+   `carb` is the share of those remaining calories going to carbohydrate. */
+const SPLITS={
+  balanced:      {ppk:1.6, carb:0.55, label:'Balanced'},
+  'high-protein':{ppk:2.2, carb:0.50, label:'High protein'},
+  'low-carb':    {ppk:1.8, carb:0.28, label:'Low carb'},
+};
+/* Percentage fallback for anyone who hasn't given a weight. */
+const PCT={balanced:[.30,.40,.30],'high-protein':[.40,.30,.30],'low-carb':[.35,.25,.40]};
+
+/* Multipliers cover daily life ONLY — job, commute, general moving about.
+   Logged workouts and steps are added separately, so counting them here
+   too would credit the same exercise twice. */
+const LIFESTYLE={
+  desk:    {m:1.20, t:'Mostly sitting',        s:'Desk job, drive or sit most of the day'},
+  light:   {m:1.35, t:'Up and about',          s:'Some walking, on your feet part of the day'},
+  onfeet:  {m:1.50, t:'On your feet all day',  s:'Teaching, nursing, retail, hospitality'},
+  physical:{m:1.65, t:'Physical work',         s:'Construction, warehouse, manual labour'},
+};
+const KCAL_PER_KG=7700;   // energy in a kilo of body mass, near enough
+
+/* Mifflin-St Jeor — the equation dietitians reach for first. */
+function bmr(){
+  if(!S.weight) return null;
+  if(!S.height||!S.age) return Math.round(22*S.weight);   // crude fallback
+  const c=S.sex==='male'?5:S.sex==='female'?-161:-78;     // -78 = midpoint
+  return Math.round(10*S.weight+6.25*S.height-5*S.age+c);
+}
+function maintenance(){
+  const b=bmr();
+  return b?Math.round(b*((LIFESTYLE[S.actLevel]||LIFESTYLE.light).m)):null;
+}
+const weeklyRate=()=>Math.abs(Number(S.rate)||0);
+const dailyDelta=()=>Math.round(weeklyRate()*KCAL_PER_KG/7);
+/* Deficits are capped at a quarter of maintenance, with a hard 1200 kcal
+   minimum. Flooring at BMR instead sounds safer but binds at even a modest
+   rate for smaller people, and it ignores that logged exercise is credited
+   back on top of this number. */
+function floorKcal(){
+  const m=maintenance();
+  return Math.max(1200, m?Math.round(m*0.75):1200);
+}
+/* True when the chosen rate had to be reduced to stay above the floor. */
+function rateCapped(){
+  const m=maintenance();
+  if(!m||S.goalType!=='cut') return false;
+  return m-dailyDelta()<floorKcal();
+}
+function actualRate(){
+  const m=maintenance();
+  if(!m) return weeklyRate();
+  if(S.goalType==='maintain') return 0;
+  const gap=S.goalType==='cut'?m-estimateGoal():estimateGoal()-m;
+  return Math.max(0,Math.round(gap*7/KCAL_PER_KG*100)/100);
+}
+/* True when maintenance is already at or under the 1200 minimum, so no
+   deficit is possible without going below it. */
+function noDeficitPossible(){
+  const m=maintenance();
+  return !!m&&S.goalType==='cut'&&m<=1250;
+}
 const MEALS=[{n:'Breakfast',i:'☕'},{n:'Lunch',i:'🥗'},{n:'Dinner',i:'🍽️'},{n:'Snacks',i:'🍎'}];
 const AVATARS=['🙂','😎','💪','🔥','🌟','🚀','🦁','🐯','🦊','🐼','🦉','🐝','🌸','🍀','⚡','🎯','🏆','🧗','🏊','🚴','🧘','🥇','🌊','🍎'];
 const CUP_ML=250;
@@ -1514,12 +1617,12 @@ const BADGES=[
 let S={
  v:5,name:'',avatar:'🙂',uid:'',goal:2000,onboarded:false,
  split:'balanced',goalType:'maintain',actLevel:'moderate',
- unit:'kg',weight:null,weights:{},
+ unit:'kg',weight:null,height:null,age:null,sex:'',rate:0.5,weights:{},
  waterGoal:8,stepGoal:10000,
  days:{},            // 'YYYY-MM-DD' -> {foods,acts,steps,water}
  legacy:{},          // pre-v5 daily totals, used by charts only
  bestStreak:0,favs:[],recents:[],custom:[],meals:[],
- ch:null,layout:null,_su:null,
+ ch:null,layout:null,_su:null,autoGoal:true,
  stats:{totalFoods:0,daysLogged:0,maxSteps:0,maxWater:0,maxBurn:0,perfectDays:0,proteinDays:0},
 };
 let VIEW='';         // date currently on screen
@@ -1564,6 +1667,12 @@ function load(){
     (r.acts||[]).forEach(a=>{if(!a.id)a.id=eid()});
     if(!r._del) r._del=[];
   });
+  // the activity question changed meaning — it used to fold in workouts,
+  // which are now counted separately. Remap conservatively.
+  const OLD_ACT={sedentary:'desk',light:'light',moderate:'light',active:'onfeet'};
+  if(OLD_ACT[S.actLevel]) S.actLevel=OLD_ACT[S.actLevel];
+  if(!LIFESTYLE[S.actLevel]) S.actLevel='light';
+  if(S.rate==null) S.rate=0.5;
   if(!S.uid) S.uid=uid();
   VIEW=today();
   save();
@@ -1602,19 +1711,26 @@ const inCal=()=>dIn(VIEW), outCal=()=>dOut(VIEW), left=()=>S.goal-inCal()+outCal
 const macros=()=>dMacros(VIEW);
 function macroGoals(){
   const sp=SPLITS[S.split]||SPLITS.balanced;
-  return {p:Math.round(S.goal*sp.p/4),c:Math.round(S.goal*sp.c/4),f:Math.round(S.goal*sp.f/9)};
+  if(!S.weight){
+    const q=PCT[S.split]||PCT.balanced;
+    return {p:Math.round(S.goal*q[0]/4),c:Math.round(S.goal*q[1]/4),f:Math.round(S.goal*q[2]/9)};
+  }
+  const p=Math.round(sp.ppk*S.weight);
+  const rest=Math.max(0,S.goal-p*4);
+  return {p,c:Math.round(rest*sp.carb/4),f:Math.round(rest*(1-sp.carb)/9)};
 }
 const toKg=v=>S.unit==='lb'?v/2.20462:v;
 const frKg=v=>S.unit==='lb'?v*2.20462:v;
 const fmtW=kg=>(Math.round(frKg(kg)*10)/10)+' '+S.unit;
 
 function estimateGoal(){
-  const m={sedentary:1.2,light:1.375,moderate:1.55,active:1.725}[S.actLevel]||1.55;
-  const rmr=S.weight?22*S.weight:1400;
-  let c=Math.round(rmr*m);
-  if(S.goalType==='cut') c-=300;
-  if(S.goalType==='build') c+=300;
-  return Math.max(1200,Math.round(c/10)*10);
+  const m=maintenance();
+  if(!m) return Math.max(1200,S.goal||2000);
+  let g=m;
+  if(S.goalType==='cut')   g=m-dailyDelta();
+  if(S.goalType==='build') g=m+dailyDelta();
+  g=Math.max(g,floorKcal());
+  return Math.round(g/10)*10;
 }
 
 /* ══ STREAK & STATS ══ */
@@ -1666,15 +1782,16 @@ function initCloud(){
 /* the fields that belong to the account rather than to a day */
 function settingsBlob(){
   return {name:S.name,avatar:S.avatar,goal:S.goal,split:S.split,goalType:S.goalType,onboarded:S.onboarded,
-    actLevel:S.actLevel,unit:S.unit,weight:S.weight,waterGoal:S.waterGoal,stepGoal:S.stepGoal,
+    actLevel:S.actLevel,unit:S.unit,weight:S.weight,height:S.height,age:S.age,sex:S.sex,rate:S.rate,
+    waterGoal:S.waterGoal,stepGoal:S.stepGoal,
     favs:S.favs,recents:S.recents,custom:S.custom,meals:S.meals,
-    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null};
+    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null,autoGoal:S.autoGoal!==false};
 }
 function applySettings(d,stamp){
   if(!d) return;
   if(stamp) S._su=stamp;
-  ['name','avatar','goal','split','goalType','actLevel','unit','weight','waterGoal','stepGoal','onboarded',
-   'favs','recents','custom','meals','bestStreak','ch','layout'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
+  ['name','avatar','goal','split','goalType','actLevel','unit','weight','height','age','sex','rate','waterGoal','stepGoal','onboarded',
+   'favs','recents','custom','meals','bestStreak','ch','layout','autoGoal'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
   if(d.stats) S.stats={...S.stats,...d.stats};
 }
 
@@ -2699,6 +2816,32 @@ function renderProfile(){
     {cut:'Losing weight',maintain:'Maintaining weight',build:'Building muscle'}[S.goalType];
   const v=(id,x)=>{const e=document.getElementById(id);if(e&&e.value!==String(x))e.value=x};
   v('pf-goal',S.goal);v('pf-gtype',S.goalType);v('pf-alevel',S.actLevel);
+  v('pf-height',S.height==null?'':S.height);v('pf-age',S.age==null?'':S.age);v('pf-sex',S.sex||'');
+  const rr=document.getElementById('pf-rate-row');
+  if(rr) rr.style.display=S.goalType==='maintain'?'none':'';
+  const rs=document.getElementById('pf-rate');
+  if(rs){
+    const opts=rateChoices();
+    const want=opts.map(o=>`<option value="${o.kg}">${o.t} / week</option>`).join('');
+    if(rs.dataset.u!==S.unit){rs.innerHTML=want;rs.dataset.u=S.unit}
+    const near=opts.reduce((a,o)=>Math.abs(o.kg-S.rate)<Math.abs(a.kg-S.rate)?o:a,opts[0]);
+    rs.value=String(near.kg);
+  }
+  const calc=document.getElementById('pf-calc');
+  if(calc){
+    const b=bmr(),m=maintenance();
+    if(!m) calc.textContent='Add your weight to estimate this';
+    else{
+      const parts=[`Resting ${b.toLocaleString()}`,
+                   `× ${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} daily life`,
+                   `= ${m.toLocaleString()} maintenance`];
+      if(S.goalType!=='maintain') parts.push(`${S.goalType==='cut'?'−':'+'} ${dailyDelta()} for ${fmtRate(weeklyRate())}/wk`);
+      if(noDeficitPossible()) parts.push('maintenance is near the 1,200 minimum — no deficit applied');
+      else if(rateCapped()) parts.push(`capped at 25% — about ${fmtRate(actualRate())}/wk`);
+      if(!S.height||!S.age) parts.push('add height & age to sharpen');
+      calc.innerHTML=parts.map(esc).join('<br>');
+    }
+  }
   v('pf-wgoal',S.waterGoal);v('pf-sgoal',S.stepGoal);v('pf-unit',S.unit);
   v('pf-dname',S.name);
   const g=macroGoals();
@@ -3514,10 +3657,35 @@ function openAvatar(){
 }
 
 /* ══ PROFILE ACTIONS ══ */
-function setGoal(){touchSettings();S.goal=Math.max(1000,Math.min(6000,parseInt(document.getElementById('pf-goal').value)||2000));render()}
-function setGoalType(){touchSettings();S.goalType=document.getElementById('pf-gtype').value;render()}
-function setActLevel(){touchSettings();S.actLevel=document.getElementById('pf-alevel').value;render()}
-function recalcGoal(){S.goal=estimateGoal();touchSettings();render();toast(S.weight?'Goal set to '+S.goal+' kcal':'Estimated without weight — log it for accuracy')}
+function setGoal(){
+  touchSettings();
+  S.goal=Math.max(1000,Math.min(6000,parseInt(document.getElementById('pf-goal').value)||2000));
+  S.autoGoal=false;      // typed by hand — stop recalculating over it
+  render();
+}
+function setGoalType(){touchSettings();S.goalType=document.getElementById('pf-gtype').value;autoGoal();render()}
+function setActLevel(){touchSettings();S.actLevel=document.getElementById('pf-alevel').value;autoGoal();render()}
+function setRate(){touchSettings();S.rate=parseFloat(document.getElementById('pf-rate').value)||0;autoGoal();render()}
+function setHeight(){
+  touchSettings();
+  const v=parseFloat(document.getElementById('pf-height').value);
+  S.height=(v&&v>=90&&v<=250)?v:null;
+  autoGoal();render();
+}
+function setAge(){
+  touchSettings();
+  const v=parseInt(document.getElementById('pf-age').value);
+  S.age=(v&&v>=13&&v<=110)?v:null;
+  autoGoal();render();
+}
+function setSex(){touchSettings();S.sex=document.getElementById('pf-sex').value;autoGoal();render()}
+/* Keep the goal in step with the inputs, but never move a number the
+   person typed in themselves. */
+function autoGoal(){if(S.autoGoal!==false) S.goal=estimateGoal()}
+function recalcGoal(){
+  S.autoGoal=true;S.goal=estimateGoal();touchSettings();render();
+  toast(maintenance()?'Goal set to '+S.goal.toLocaleString()+' kcal':'Add your weight in Profile for a real estimate');
+}
 function setSplit(e){S.split=e.dataset.split;touchSettings();render()}
 function setWaterGoal(){touchSettings();S.waterGoal=Math.max(1,Math.min(30,parseInt(document.getElementById('pf-wgoal').value)||8));render()}
 function setStepGoal(){touchSettings();S.stepGoal=Math.max(1000,Math.min(50000,parseInt(document.getElementById('pf-sgoal').value)||10000));render()}
@@ -3565,43 +3733,115 @@ function obPick(e,t){
   e.classList.add('on');
   if(t==='goal') obGoal=e.dataset.goal; else obAct=e.dataset.act;
 }
+function obHUnit(){
+  const ft=document.getElementById('ob-hunit').value==='ft';
+  document.getElementById('ob-h2').hidden=!ft;
+  document.getElementById('ob-h1').placeholder=ft?'5':'170';
+}
+function readHeight(u,a,b){
+  const v1=parseFloat(document.getElementById(a).value);
+  if(!v1||v1<=0) return null;
+  if(document.getElementById(u).value==='ft'){
+    const inch=parseFloat(document.getElementById(b).value)||0;
+    return Math.round((v1*30.48+inch*2.54)*10)/10;
+  }
+  return Math.round(v1*10)/10;
+}
 function obGo(a,b){
   document.getElementById('ob-'+a).classList.remove('active');
   document.getElementById('ob-'+b).classList.add('active');
   document.getElementById('ob-fill').style.width=(b/5*100)+'%';
   document.getElementById('onboard').scrollTop=0;
 }
-function obNext(s){
-  if(s===1){
+function obNext(step){
+  if(step===1){
     const n=document.getElementById('ob-name').value.trim();
     if(!n){toast('Enter a name to continue');document.getElementById('ob-name').focus();return}
     S.name=n.slice(0,20);
   }
-  if(s===2){if(!obGoal){toast('Pick a goal');return}S.goalType=obGoal}
-  if(s===3){if(!obAct){toast('Pick an activity level');return}S.actLevel=obAct}
-  if(s===4){
-    const v=parseFloat(document.getElementById('ob-weight').value);
+  if(step===2){if(!obGoal){toast('Pick a goal');return}S.goalType=obGoal}
+  if(step===3){
+    const w=parseFloat(document.getElementById('ob-weight').value);
     S.unit=document.getElementById('ob-unit').value;
-    if(v&&v>0){
-      const kg=toKg(v);
-      if(kg<20||kg>400){toast('That looks off — check the unit');return}
-      S.weight=kg;S.weights[today()]=kg;
-    }
+    if(!w||w<=0){toast('Enter your weight, or skip this step');return}
+    const kg=toKg(w);
+    if(kg<25||kg>400){toast('That weight looks off — check the unit');return}
+    S.weight=kg;S.weights[today()]=kg;WDIRTY.add(today());
+    const h=readHeight('ob-hunit','ob-h1','ob-h2');
+    if(h!=null&&(h<90||h>250)){toast('That height looks off — check the unit');return}
+    S.height=h;
+    const a=parseInt(document.getElementById('ob-age').value);
+    if(a&&(a<13||a>110)){toast('Enter an age between 13 and 110');return}
+    S.age=a||null;
+    S.sex=document.getElementById('ob-sex').value;
+    buildLifestyle();
+  }
+  if(step===4){
+    if(!obAct){toast('Pick the one closest to your day');return}
+    S.actLevel=obAct;
     obResults();
   }
-  obGo(s,s+1);
+  obGo(step,step+1);
 }
-function obSkipWeight(){S.unit=document.getElementById('ob-unit').value;obResults();obGo(4,5)}
+function obSkipWeight(){
+  S.unit=document.getElementById('ob-unit').value;
+  buildLifestyle();obGo(3,4);
+}
+function buildLifestyle(){
+  const box=document.getElementById('ob-life');
+  if(box.dataset.built) return;
+  box.innerHTML=Object.entries(LIFESTYLE).map(([k,v])=>
+    `<div class="ob-opt" data-act="${k}" onclick="obPick(this,'act')">
+       <div class="oo-t">${esc(v.t)}</div><div class="oo-s">${esc(v.s)}</div></div>`).join('');
+  box.dataset.built='1';
+}
+
+/* rate options, shown in whichever unit the person uses */
+function rateChoices(){
+  return S.unit==='lb'
+    ? [{kg:0.23,t:'0.5 lb'},{kg:0.45,t:'1 lb'},{kg:0.68,t:'1.5 lb'}]
+    : [{kg:0.25,t:'0.25 kg'},{kg:0.5,t:'0.5 kg'},{kg:0.75,t:'0.75 kg'}];
+}
 function obResults(){
+  const wrap=document.getElementById('ob-rate-wrap');
+  const maint=maintenance();
+  if(S.goalType==='maintain'||!maint){
+    wrap.hidden=true;S.rate=0;
+  }else{
+    wrap.hidden=false;
+    document.getElementById('ob-rate-lbl').textContent=
+      (S.goalType==='cut'?'How fast do you want to lose?':'How fast do you want to gain?')+' (per week)';
+    const box=document.getElementById('ob-rates');
+    box.innerHTML=rateChoices().map(r=>
+      `<div class="split-chip${Math.abs(r.kg-S.rate)<0.02?' active':''}" data-kg="${r.kg}">${r.t}</div>`).join('');
+    box.querySelectorAll('.split-chip').forEach(c=>c.onclick=()=>{
+      S.rate=parseFloat(c.dataset.kg);obResults();
+    });
+  }
   S.goal=estimateGoal();
   const g=macroGoals();
   document.getElementById('ob-cal').textContent=S.goal.toLocaleString();
   document.getElementById('ob-p').textContent=g.p+'g';
   document.getElementById('ob-c').textContent=g.c+'g';
   document.getElementById('ob-f').textContent=g.f+'g';
-  document.getElementById('ob-basis').textContent=S.weight
-    ?'Estimated from your weight, activity level and goal.'
-    :'Estimated from your activity level and goal. Log your weight any time to sharpen it.';
+  const b=bmr();
+  document.getElementById('ob-basis').textContent=
+    !maint ? 'No weight given, so set a target yourself in Profile — everything else still works.'
+    : (S.height&&S.age ? 'Mifflin-St Jeor, then your daily life. Workouts you log are added on top.'
+                       : 'Estimated from weight alone. Add height and age in Profile to sharpen it.');
+  document.getElementById('ob-break').textContent=
+    maint ? `Resting ${b.toLocaleString()} · daily life ×${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} = ${maint.toLocaleString()} maintenance`
+          : '';
+  const warn=document.getElementById('ob-warn');
+  warn.style.color='var(--c)';
+  if(noDeficitPossible()){
+    warn.textContent='Your estimated maintenance is already close to the 1,200 kcal minimum, so this target does not create a deficit. Worth talking to a GP or dietitian before trying to lose weight from here.';
+  }else if(maint&&rateCapped()){
+    warn.textContent=`Deficits are capped at a quarter of maintenance, so this has been eased to about ${fmtRate(actualRate())} a week.`;
+  }else{warn.textContent='';}
+}
+function fmtRate(kg){
+  return S.unit==='lb' ? (Math.round(kg*2.20462*10)/10)+' lb' : (Math.round(kg*100)/100)+' kg';
 }
 function finishOnboard(){
   S.onboarded=true;
