@@ -705,6 +705,93 @@ body{
 .tp-num{font-family:var(--mono);font-size:27px;font-weight:700;color:var(--accent);line-height:1}
 .tp-of{font-size:12px;color:var(--faint)}
 
+
+/* ══ Customisable home blocks ══ */
+.tile.tile-lg .tile-val{font-size:38px}
+.tile.tile-lg .tile-hd{margin-bottom:18px}
+.tile.tile-lg{padding:18px}
+.pts-card{cursor:pointer}
+.pts-card .tile-val{font-size:30px}
+.pts-card.lg .tile-val{font-size:38px}
+.add-block-btn{
+  width:100%;background:none;border:1px dashed rgba(255,255,255,.13);
+  border-radius:var(--r-md);color:var(--muted);font-family:var(--sans);
+  font-size:12px;font-weight:500;padding:13px;cursor:pointer;margin-top:4px;
+}
+.add-block-btn:active{border-color:rgba(195,245,63,.4);color:var(--accent)}
+
+/* customise mode */
+.cust-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--surface);border:1px solid rgba(195,245,63,.3);
+  border-radius:var(--r-md);padding:11px 14px;margin-bottom:14px;
+  position:sticky;top:0;z-index:20;
+}
+.cust-bar .cb-t{font-size:13px;font-weight:600}
+.cust-bar .cb-s{font-size:10.5px;color:var(--faint);margin-top:2px}
+.cust-done{
+  background:var(--accent);color:#0A0B10;border:none;border-radius:var(--r-sm);
+  padding:9px 16px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;
+}
+.cust-list{position:relative}
+.cust-row{
+  display:flex;align-items:center;gap:11px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:12px 13px;margin-bottom:8px;
+  touch-action:none;transition:transform .18s cubic-bezier(.2,0,0,1),box-shadow .15s,opacity .15s;
+}
+.cust-row.off{opacity:.45}
+.cust-row.drag{
+  transition:none;box-shadow:0 12px 30px rgba(0,0,0,.55);
+  border-color:rgba(195,245,63,.45);position:relative;z-index:5;
+}
+.cust-grip{
+  color:var(--faint);font-size:15px;line-height:1;cursor:grab;flex-shrink:0;
+  padding:4px 2px;letter-spacing:1px;
+}
+.cust-row.drag .cust-grip{cursor:grabbing;color:var(--accent)}
+.cust-ico{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.cust-name{flex:1;min-width:0;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cust-note{font-size:10px;color:var(--faint);margin-top:2px;font-weight:400}
+.size-seg{display:flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px;flex-shrink:0}
+.size-seg button{
+  background:none;border:none;color:var(--faint);font-family:var(--sans);
+  font-size:10px;font-weight:700;padding:5px 8px;border-radius:7px;cursor:pointer;
+}
+.size-seg button.on{background:var(--accent);color:#0A0B10}
+.eye-btn{
+  background:none;border:none;font-size:15px;cursor:pointer;padding:4px;
+  flex-shrink:0;opacity:.5;
+}
+.eye-btn.on{opacity:1}
+.cust-sec{margin:18px 2px 9px}
+
+/* ══ Measured maintenance card ══ */
+.ad-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:15px;margin-bottom:7px;
+}
+.ad-card.ready{border-color:rgba(195,245,63,.35);background:rgba(195,245,63,.045)}
+.ad-hd{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.ad-hd .ad-t{font-size:13.5px;font-weight:600;flex:1}
+.ad-big{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--accent);line-height:1}
+.ad-sub{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:7px}
+.ad-bars{display:flex;flex-direction:column;gap:9px;margin-top:11px}
+.ad-bar-row{display:flex;align-items:center;gap:10px}
+.ad-bar-lbl{font-size:10.5px;color:var(--faint);width:96px;flex-shrink:0}
+.ad-bar{flex:1;height:5px;background:var(--track);border-radius:3px;overflow:hidden}
+.ad-bar span{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.ad-bar-n{font-family:var(--mono);font-size:10.5px;color:var(--muted);width:40px;text-align:right;flex-shrink:0}
+.ad-actions{display:flex;gap:8px;margin-top:13px}
+.ad-actions button{
+  flex:1;border-radius:var(--r-sm);padding:11px;font-family:var(--sans);
+  font-size:12.5px;font-weight:600;cursor:pointer;border:none;
+}
+.ad-yes{background:var(--accent);color:#0A0B10}
+.ad-no{background:var(--surface-3);color:var(--muted)}
+.ad-off{background:none;border:none;color:var(--faint);font-family:var(--sans);
+  font-size:11.5px;cursor:pointer;padding:8px 0 0}
+
 /* ══ Toast & misc ══ */
 .toast{
   position:absolute;top:66px;left:50%;transform:translateX(-50%);
@@ -785,40 +872,60 @@ body{
   </div>
 
   <div class="ob-step" id="ob-3">
-    <div class="ob-ico">⚡</div>
-    <div class="ob-title">How active are you?</div>
-    <div class="ob-sub">On a typical week, not counting workouts you log here.</div>
-    <div class="ob-opts">
-      <div class="ob-opt" data-act="sedentary" onclick="obPick(this,'act')"><div class="oo-t">Sedentary</div><div class="oo-s">Desk job, little exercise</div></div>
-      <div class="ob-opt" data-act="light" onclick="obPick(this,'act')"><div class="oo-t">Lightly active</div><div class="oo-s">1–3 days a week</div></div>
-      <div class="ob-opt" data-act="moderate" onclick="obPick(this,'act')"><div class="oo-t">Moderately active</div><div class="oo-s">3–5 days a week</div></div>
-      <div class="ob-opt" data-act="active" onclick="obPick(this,'act')"><div class="oo-t">Very active</div><div class="oo-s">6–7 days a week</div></div>
+    <div class="ob-ico">📐</div>
+    <div class="ob-title">A few numbers</div>
+    <div class="ob-sub">These feed the standard equation for resting metabolism. The more you give, the closer the estimate.</div>
+    <div class="g2">
+      <div class="fld"><label class="micro">Weight</label>
+        <div class="portion"><input class="ob-in" id="ob-weight" type="number" inputmode="decimal" step="0.1" placeholder="70">
+        <select class="ob-in" id="ob-unit" style="width:80px;padding:14px 8px"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+      <div class="fld"><label class="micro">Age</label>
+        <input class="ob-in" id="ob-age" type="number" inputmode="numeric" placeholder="30"></div>
     </div>
-    <div class="ob-foot"><button class="ob-next" onclick="obNext(3)">CONTINUE</button></div>
+    <div class="fld"><label class="micro">Height</label>
+      <div class="portion">
+        <input class="ob-in" id="ob-h1" type="number" inputmode="numeric" placeholder="170">
+        <input class="ob-in" id="ob-h2" type="number" inputmode="numeric" placeholder="in" hidden>
+        <select class="ob-in" id="ob-hunit" style="width:98px;padding:14px 8px" onchange="obHUnit()">
+          <option value="cm">cm</option><option value="ft">ft / in</option></select>
+      </div>
+    </div>
+    <div class="fld"><label class="micro">Sex at birth</label>
+      <select class="ob-in" id="ob-sex">
+        <option value="">Prefer not to say</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+      <div class="note">Used only in the metabolism formula, where it is worth about 165 kcal. Left blank it takes the midpoint.</div>
+    </div>
+    <div class="ob-foot">
+      <button class="ob-next" onclick="obNext(3)">CONTINUE</button>
+      <button class="ob-skip" onclick="obSkipWeight()">Skip — I'll set my own target</button>
+    </div>
   </div>
 
   <div class="ob-step" id="ob-4">
-    <div class="ob-ico">⚖️</div>
-    <div class="ob-title">Your weight</div>
-    <div class="ob-sub">Used to estimate your maintenance calories. Skip it and set a target yourself instead.</div>
-    <div class="g2">
-      <input class="ob-in" id="ob-weight" type="number" inputmode="decimal" step="0.1" placeholder="e.g. 70">
-      <select class="ob-in" id="ob-unit"><option value="kg">kg</option><option value="lb">lb</option></select>
-    </div>
-    <div class="note">Weight stays on your device. It is never shared to the leaderboard.</div>
-    <div class="ob-foot">
-      <button class="ob-next" onclick="obNext(4)">CONTINUE</button>
-      <button class="ob-skip" onclick="obSkipWeight()">Skip for now</button>
-    </div>
+    <div class="ob-ico">🚶</div>
+    <div class="ob-title">Your typical day</div>
+    <div class="ob-sub">Your job and daily life only. Workouts and steps you log get added on top, so don't count them twice.</div>
+    <div class="ob-opts" id="ob-life"></div>
+    <div class="ob-foot"><button class="ob-next" onclick="obNext(4)">CONTINUE</button></div>
   </div>
 
   <div class="ob-step" id="ob-5">
-    <div class="ob-ico">🎉</div>
-    <div class="ob-title">Your plan is ready</div>
-    <div class="ob-sub" id="ob-basis">Based on your goal and activity level.</div>
+    <div class="ob-ico">🎯</div>
+    <div class="ob-title">Your plan</div>
+    <div class="ob-sub" id="ob-basis">Based on your goal and daily life.</div>
+
+    <div class="fld" id="ob-rate-wrap">
+      <label class="micro" id="ob-rate-lbl">How fast?</label>
+      <div class="split-chips" id="ob-rates"></div>
+    </div>
+
     <div class="ob-res">
       <div class="micro">Daily calorie goal</div>
       <div style="margin-top:8px"><span class="obr-v" id="ob-cal">2000</span><span class="obr-u">KCAL</span></div>
+      <div class="note" id="ob-break" style="margin-top:9px"></div>
     </div>
     <div class="ob-res">
       <div class="micro">Macro targets</div>
@@ -828,7 +935,7 @@ body{
         <div class="obm-i"><div class="obm-v" id="ob-f" style="color:var(--f)">67g</div><div class="micro obm-l">Fat</div></div>
       </div>
     </div>
-    <div class="note">You can change any of this later in Profile.</div>
+    <div class="note" id="ob-warn"></div>
     <div class="ob-foot"><button class="ob-next" onclick="finishOnboard()">START TRACKING</button></div>
   </div>
 </div>
@@ -863,76 +970,8 @@ body{
     </div>
 
     <div id="readonly-slot"></div>
-
-    <div class="card">
-      <div class="ring-row">
-        <div class="ring-wrap">
-          <svg id="ring" width="136" height="136" viewBox="0 0 136 136">
-            <circle cx="68" cy="68" r="54" fill="none" stroke="var(--track)" stroke-width="10"/>
-          </svg>
-          <div class="ring-center">
-            <div class="ring-num" id="ring-n">0</div>
-            <div class="ring-cap" id="ring-cap">kcal left</div>
-            <div class="ring-goal" id="ring-goal">/ 2,000</div>
-          </div>
-        </div>
-        <div class="macro-list">
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--p)"></span>
-              <span class="macro-name">Protein</span>
-              <span class="macro-fig"><span id="mp-v">0</span><span class="of">/<span id="mp-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mp-bar" style="background:var(--p);width:0%"></div></div>
-          </div>
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--c)"></span>
-              <span class="macro-name">Carbs</span>
-              <span class="macro-fig"><span id="mc-v">0</span><span class="of">/<span id="mc-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mc-bar" style="background:var(--c);width:0%"></div></div>
-          </div>
-          <div>
-            <div class="macro-top">
-              <span class="macro-dot" style="background:var(--f)"></span>
-              <span class="macro-name">Fat</span>
-              <span class="macro-fig"><span id="mf-v">0</span><span class="of">/<span id="mf-g">0</span>g</span></span>
-            </div>
-            <div class="macro-bar"><div class="macro-fill" id="mf-bar" style="background:var(--f);width:0%"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-strip">
-        <div class="stat-cell"><div class="sc-val" id="st-rem" style="color:var(--accent)">0</div><div class="sc-lbl">Remaining</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-con">0</div><div class="sc-lbl">Consumed</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-pro" style="color:var(--p)">0g</div><div class="sc-lbl">Protein left</div></div>
-        <div class="stat-cell"><div class="sc-val" id="st-brn" style="color:var(--c)">0</div><div class="sc-lbl">Burned</div></div>
-      </div>
-    </div>
-
-    <div class="sec-label"><span class="micro">Activity</span></div>
-    <div class="tile-grid">
-      <div class="tile" id="tile-water" onclick="openWater()">
-        <div class="tile-hd"><span class="micro">Water</span><span class="tile-icon" style="color:var(--water)">💧</span></div>
-        <div class="tile-val"><span id="wt-v">0</span><span class="tv-of"> /<span id="wt-g">8</span> cups</span></div>
-        <div class="tile-sub" id="wt-sub">0 L of 2 L</div>
-        <div class="tile-bar"><div class="tile-fill" id="wt-bar" style="background:var(--water);width:0%"></div></div>
-      </div>
-      <div class="tile" id="tile-steps" onclick="openSteps()">
-        <div class="tile-hd"><span class="micro">Steps</span><span class="tile-icon" style="color:var(--steps)">🚶</span></div>
-        <div class="tile-val" id="sp-v">0</div>
-        <div class="tile-sub" id="sp-sub">Goal 10,000</div>
-        <div class="tile-bar"><div class="tile-fill" id="sp-bar" style="background:var(--steps);width:0%"></div></div>
-      </div>
-    </div>
-
-    <div class="sec-label">
-      <span class="micro">Meals today</span>
-      <button class="sec-link" onclick="openFullLog()">Full log</button>
-    </div>
-    <div id="meals"></div>
+    <div id="cust-bar"></div>
+    <div id="home-blocks"></div>
   </div>
 
   <!-- ───── ACTIVITY ───── -->
@@ -1038,11 +1077,20 @@ body{
           <option value="cut">Lose weight</option><option value="maintain">Maintain</option><option value="build">Build muscle</option></select></div>
       </div>
       <div class="row">
-        <div class="row-left"><span class="row-ico">⚡</span><span class="row-lbl">Activity level</span></div>
+        <div class="row-left"><span class="row-ico">🚶</span><span class="row-lbl">Typical day</span></div>
         <div class="row-val"><select id="pf-alevel" onchange="setActLevel()">
-          <option value="sedentary">Sedentary</option><option value="light">Light</option>
-          <option value="moderate">Moderate</option><option value="active">Very active</option></select></div>
+          <option value="desk">Mostly sitting</option><option value="light">Up and about</option>
+          <option value="onfeet">On your feet</option><option value="physical">Physical work</option></select></div>
       </div>
+      <div class="row" id="pf-rate-row">
+        <div class="row-left"><span class="row-ico">📉</span><span class="row-lbl">Target rate</span></div>
+        <div class="row-val"><select id="pf-rate" onchange="setRate()"></select></div>
+      </div>
+      <div class="row" style="align-items:flex-start">
+        <div class="row-left"><span class="row-ico">🧮</span><span class="row-lbl">Working</span></div>
+        <div class="row-val num" id="pf-calc" style="text-align:right;white-space:normal;max-width:62%;font-size:11px;line-height:1.7"></div>
+      </div>
+      <div id="pf-adapt"></div>
       <button class="text-link" id="recalc-btn" onclick="recalcGoal()">↻ Recalculate from weight &amp; activity</button>
     </div>
 
@@ -1071,6 +1119,19 @@ body{
       <div class="row">
         <div class="row-left"><span class="row-ico">⚖️</span><span class="row-lbl">Weight unit</span></div>
         <div class="row-val"><select id="pf-unit" onchange="setUnit()"><option value="kg">kg</option><option value="lb">lb</option></select></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">📏</span><span class="row-lbl">Height</span></div>
+        <div class="row-val"><input type="number" inputmode="numeric" id="pf-height" onchange="setHeight()"><span style="font-size:11px">cm</span></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">🎂</span><span class="row-lbl">Age</span></div>
+        <div class="row-val"><input type="number" inputmode="numeric" id="pf-age" onchange="setAge()"></div>
+      </div>
+      <div class="row">
+        <div class="row-left"><span class="row-ico">⚗️</span><span class="row-lbl">Sex at birth</span></div>
+        <div class="row-val"><select id="pf-sex" onchange="setSex()">
+          <option value="">Not set</option><option value="female">Female</option><option value="male">Male</option></select></div>
       </div>
       <div class="row" style="cursor:pointer" onclick="openWeight()">
         <div class="row-left"><span class="row-ico">📈</span><span class="row-lbl">Log weight</span></div>
@@ -1497,7 +1558,134 @@ const ACTS=[
  {name:'Dance',icon:'💃',rate:5},{name:'Tennis',icon:'🎾',rate:7},
 ];
 
-const SPLITS={balanced:{p:.30,c:.40,f:.30},'high-protein':{p:.40,c:.30,f:.30},'low-carb':{p:.35,c:.25,f:.40}};
+/* Protein is prescribed per kilo of bodyweight, not as a share of calories —
+   a percentage target shrinks exactly when you cut, which is when you most
+   need it held up. Carbs and fat then divide whatever calories are left.
+   `carb` is the share of those remaining calories going to carbohydrate. */
+const SPLITS={
+  balanced:      {ppk:1.6, carb:0.55, label:'Balanced'},
+  'high-protein':{ppk:2.2, carb:0.50, label:'High protein'},
+  'low-carb':    {ppk:1.8, carb:0.28, label:'Low carb'},
+};
+/* Percentage fallback for anyone who hasn't given a weight. */
+const PCT={balanced:[.30,.40,.30],'high-protein':[.40,.30,.30],'low-carb':[.35,.25,.40]};
+
+/* Multipliers cover daily life ONLY — job, commute, general moving about.
+   Logged workouts and steps are added separately, so counting them here
+   too would credit the same exercise twice. */
+const LIFESTYLE={
+  desk:    {m:1.20, t:'Mostly sitting',        s:'Desk job, drive or sit most of the day'},
+  light:   {m:1.35, t:'Up and about',          s:'Some walking, on your feet part of the day'},
+  onfeet:  {m:1.50, t:'On your feet all day',  s:'Teaching, nursing, retail, hospitality'},
+  physical:{m:1.65, t:'Physical work',         s:'Construction, warehouse, manual labour'},
+};
+const KCAL_PER_KG=7700;   // energy in a kilo of body mass, near enough
+
+/* Mifflin-St Jeor — the equation dietitians reach for first. */
+function bmr(){
+  if(!S.weight) return null;
+  if(!S.height||!S.age) return Math.round(22*S.weight);   // crude fallback
+  const c=S.sex==='male'?5:S.sex==='female'?-161:-78;     // -78 = midpoint
+  return Math.round(10*S.weight+6.25*S.height-5*S.age+c);
+}
+function maintenanceFormula(){
+  const b=bmr();
+  return b?Math.round(b*((LIFESTYLE[S.actLevel]||LIFESTYLE.light).m)):null;
+}
+function maintenance(){
+  if(S.adaptive){const a=adaptive();if(a.ok) return a.baseline}
+  return maintenanceFormula();
+}
+
+/* ── Measured maintenance ─────────────────────────────────────
+   Every equation is a population average applied to one person.
+   Given enough logged days and weigh-ins we can do better and just
+   read it off: whatever you ate, minus the energy your weight
+   actually moved by, is what you actually burned.
+
+       expenditure = mean intake − (weight change × 7700 / days)
+
+   Two details matter. Weight is fitted with a least-squares line
+   rather than measured end-to-end, because a single reading swings
+   a kilo on water alone. And logged exercise is subtracted back out,
+   because the app credits workouts on top of the goal — leaving it
+   in would double count all over again.
+
+   The result inherits your logging habits: if you under-record by
+   10%, so does this. That is a feature for setting a target, since
+   it is the number that predicts your weight given how you log. */
+const AD={WINDOW:28,MIN_LOGGED:14,MIN_WEIGHS:4,MIN_SPAN:14};
+let DATA_REV=0,_adCache=null,_adKey='';
+function adaptive(){
+  const key=DATA_REV+'|'+today()+'|'+S.actLevel+'|'+(S.weight||0);
+  if(_adKey===key&&_adCache) return _adCache;
+  const end=today(),start=addDays(end,-(AD.WINDOW-1));
+  const ws=Object.keys(S.weights).filter(d=>d>=start&&d<=end).sort();
+  const logDays=[];
+  for(let i=0;i<AD.WINDOW;i++){const d=addDays(end,-i);if(dIn(d)>0) logDays.push(d)}
+  const span=ws.length>1?Math.round((parseD(ws[ws.length-1])-parseD(ws[0]))/864e5):0;
+  const r={ok:false,reason:'',logged:logDays.length,weighIns:ws.length,span,
+           need:{logged:AD.MIN_LOGGED,weighIns:AD.MIN_WEIGHS,span:AD.MIN_SPAN}};
+
+  if(ws.length<AD.MIN_WEIGHS)      r.reason=`${AD.MIN_WEIGHS - ws.length} more weigh-in${AD.MIN_WEIGHS-ws.length===1?'':'s'} needed`;
+  else if(span<AD.MIN_SPAN)        r.reason=`weigh-ins need to span ${AD.MIN_SPAN} days — yours cover ${span}`;
+  else if(logDays.length<AD.MIN_LOGGED) r.reason=`${AD.MIN_LOGGED-logDays.length} more day${AD.MIN_LOGGED-logDays.length===1?'':'s'} of food logging needed`;
+  if(r.reason){_adKey=key;_adCache=r;return r}
+
+  // least-squares slope, kg per day
+  const t0=parseD(ws[0]).getTime();
+  const pts=ws.map(d=>({x:(parseD(d).getTime()-t0)/864e5,y:S.weights[d]}));
+  const n=pts.length;
+  const sx=pts.reduce((a,p)=>a+p.x,0), sy=pts.reduce((a,p)=>a+p.y,0);
+  const sxx=pts.reduce((a,p)=>a+p.x*p.x,0), sxy=pts.reduce((a,p)=>a+p.x*p.y,0);
+  const den=n*sxx-sx*sx;
+  if(!den){r.reason='weigh-ins are all on the same day';_adKey=key;_adCache=r;return r}
+  const slope=(n*sxy-sx*sy)/den;
+
+  const meanIn=Math.round(logDays.reduce((a,d)=>a+dIn(d),0)/logDays.length);
+  const meanEx=Math.round(logDays.reduce((a,d)=>a+dOut(d),0)/logDays.length);
+  const observed=Math.round(meanIn-slope*KCAL_PER_KG);
+  const baseline=Math.round(observed-meanEx);
+
+  const f=maintenanceFormula();
+  if(baseline<800||(f&&(baseline/f<0.6||baseline/f>1.6))){
+    r.reason='the numbers look off — check for missed days or a stray weigh-in';
+    r.observed=observed;r.baseline=baseline;
+    _adKey=key;_adCache=r;return r;
+  }
+  Object.assign(r,{ok:true,slopeWeek:Math.round(slope*7*100)/100,
+    meanIn,meanEx,observed,baseline,formula:f});
+  _adKey=key;_adCache=r;return r;
+}
+const weeklyRate=()=>Math.abs(Number(S.rate)||0);
+const dailyDelta=()=>Math.round(weeklyRate()*KCAL_PER_KG/7);
+/* Deficits are capped at a quarter of maintenance, with a hard 1200 kcal
+   minimum. Flooring at BMR instead sounds safer but binds at even a modest
+   rate for smaller people, and it ignores that logged exercise is credited
+   back on top of this number. */
+function floorKcal(){
+  const m=maintenance();
+  return Math.max(1200, m?Math.round(m*0.75):1200);
+}
+/* True when the chosen rate had to be reduced to stay above the floor. */
+function rateCapped(){
+  const m=maintenance();
+  if(!m||S.goalType!=='cut') return false;
+  return m-dailyDelta()<floorKcal();
+}
+function actualRate(){
+  const m=maintenance();
+  if(!m) return weeklyRate();
+  if(S.goalType==='maintain') return 0;
+  const gap=S.goalType==='cut'?m-estimateGoal():estimateGoal()-m;
+  return Math.max(0,Math.round(gap*7/KCAL_PER_KG*100)/100);
+}
+/* True when maintenance is already at or under the 1200 minimum, so no
+   deficit is possible without going below it. */
+function noDeficitPossible(){
+  const m=maintenance();
+  return !!m&&S.goalType==='cut'&&m<=1250;
+}
 const MEALS=[{n:'Breakfast',i:'☕'},{n:'Lunch',i:'🥗'},{n:'Dinner',i:'🍽️'},{n:'Snacks',i:'🍎'}];
 const AVATARS=['🙂','😎','💪','🔥','🌟','🚀','🦁','🐯','🦊','🐼','🦉','🐝','🌸','🍀','⚡','🎯','🏆','🧗','🏊','🚴','🧘','🥇','🌊','🍎'];
 const CUP_ML=250;
@@ -1521,12 +1709,12 @@ const BADGES=[
 let S={
  v:5,name:'',avatar:'🙂',uid:'',goal:2000,onboarded:false,
  split:'balanced',goalType:'maintain',actLevel:'moderate',
- unit:'kg',weight:null,weights:{},
+ unit:'kg',weight:null,height:null,age:null,sex:'',rate:0.5,weights:{},
  waterGoal:8,stepGoal:10000,
  days:{},            // 'YYYY-MM-DD' -> {foods,acts,steps,water}
  legacy:{},          // pre-v5 daily totals, used by charts only
  bestStreak:0,favs:[],recents:[],custom:[],meals:[],
- ch:null,
+ ch:null,layout:null,_su:null,autoGoal:true,adaptive:false,
  stats:{totalFoods:0,daysLogged:0,maxSteps:0,maxWater:0,maxBurn:0,perfectDays:0,proteinDays:0},
 };
 let VIEW='';         // date currently on screen
@@ -1571,6 +1759,12 @@ function load(){
     (r.acts||[]).forEach(a=>{if(!a.id)a.id=eid()});
     if(!r._del) r._del=[];
   });
+  // the activity question changed meaning — it used to fold in workouts,
+  // which are now counted separately. Remap conservatively.
+  const OLD_ACT={sedentary:'desk',light:'light',moderate:'light',active:'onfeet'};
+  if(OLD_ACT[S.actLevel]) S.actLevel=OLD_ACT[S.actLevel];
+  if(!LIFESTYLE[S.actLevel]) S.actLevel='light';
+  if(S.rate==null) S.rate=0.5;
   if(!S.uid) S.uid=uid();
   VIEW=today();
   save();
@@ -1609,19 +1803,26 @@ const inCal=()=>dIn(VIEW), outCal=()=>dOut(VIEW), left=()=>S.goal-inCal()+outCal
 const macros=()=>dMacros(VIEW);
 function macroGoals(){
   const sp=SPLITS[S.split]||SPLITS.balanced;
-  return {p:Math.round(S.goal*sp.p/4),c:Math.round(S.goal*sp.c/4),f:Math.round(S.goal*sp.f/9)};
+  if(!S.weight){
+    const q=PCT[S.split]||PCT.balanced;
+    return {p:Math.round(S.goal*q[0]/4),c:Math.round(S.goal*q[1]/4),f:Math.round(S.goal*q[2]/9)};
+  }
+  const p=Math.round(sp.ppk*S.weight);
+  const rest=Math.max(0,S.goal-p*4);
+  return {p,c:Math.round(rest*sp.carb/4),f:Math.round(rest*(1-sp.carb)/9)};
 }
 const toKg=v=>S.unit==='lb'?v/2.20462:v;
 const frKg=v=>S.unit==='lb'?v*2.20462:v;
 const fmtW=kg=>(Math.round(frKg(kg)*10)/10)+' '+S.unit;
 
 function estimateGoal(){
-  const m={sedentary:1.2,light:1.375,moderate:1.55,active:1.725}[S.actLevel]||1.55;
-  const rmr=S.weight?22*S.weight:1400;
-  let c=Math.round(rmr*m);
-  if(S.goalType==='cut') c-=300;
-  if(S.goalType==='build') c+=300;
-  return Math.max(1200,Math.round(c/10)*10);
+  const m=maintenance();
+  if(!m) return Math.max(1200,S.goal||2000);
+  let g=m;
+  if(S.goalType==='cut')   g=m-dailyDelta();
+  if(S.goalType==='build') g=m+dailyDelta();
+  g=Math.max(g,floorKcal());
+  return Math.round(g/10)*10;
 }
 
 /* ══ STREAK & STATS ══ */
@@ -1657,6 +1858,7 @@ function last7(fn){let t=0;for(let i=0;i<7;i++)t+=fn(addDays(today(),-i));return
    localStorage and pushes whatever changed the next time it can. */
 const SB=!!(SUPABASE_URL&&SUPABASE_KEY);
 let CLOUD=null, ME=null, SYNC='off', DIRTY=new Set(), syncT=null, settingsDirty=false;
+let SYNC_MSG='', SLIM=false, SERVER_ACCOUNT=false;
 const MODE_KEY='caltrack-mode';
 
 function initCloud(){
@@ -1672,14 +1874,16 @@ function initCloud(){
 /* the fields that belong to the account rather than to a day */
 function settingsBlob(){
   return {name:S.name,avatar:S.avatar,goal:S.goal,split:S.split,goalType:S.goalType,onboarded:S.onboarded,
-    actLevel:S.actLevel,unit:S.unit,weight:S.weight,waterGoal:S.waterGoal,stepGoal:S.stepGoal,
+    actLevel:S.actLevel,unit:S.unit,weight:S.weight,height:S.height,age:S.age,sex:S.sex,rate:S.rate,
+    waterGoal:S.waterGoal,stepGoal:S.stepGoal,
     favs:S.favs,recents:S.recents,custom:S.custom,meals:S.meals,
-    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null};
+    bestStreak:S.bestStreak,stats:S.stats,ch:S.ch||null,layout:S.layout||null,autoGoal:S.autoGoal!==false,adaptive:!!S.adaptive,adaptSnooze:S.adaptSnooze||null};
 }
-function applySettings(d){
+function applySettings(d,stamp){
   if(!d) return;
-  ['name','avatar','goal','split','goalType','actLevel','unit','weight','waterGoal','stepGoal','onboarded',
-   'favs','recents','custom','meals','bestStreak','ch'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
+  if(stamp) S._su=stamp;
+  ['name','avatar','goal','split','goalType','actLevel','unit','weight','height','age','sex','rate','waterGoal','stepGoal','onboarded',
+   'favs','recents','custom','meals','bestStreak','ch','layout','autoGoal','adaptive','adaptSnooze'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k]});
   if(d.stats) S.stats={...S.stats,...d.stats};
 }
 
@@ -1712,22 +1916,31 @@ function touch(d,field){
     if(field==='steps') r._us=r._u;
     if(field==='water') r._uw=r._u;
   }
-  DIRTY.add(d);queueSync();
+  DIRTY.add(d);DATA_REV++;queueSync();
 }
 function tombstone(d,id){
   const r=S.days[d];if(!r||!id) return;
   r._del=[...new Set([...(r._del||[]),id])].slice(-500);
 }
-function touchSettings(){settingsDirty=true;queueSync()}
+function touchSettings(){settingsDirty=true;S._su=now();queueSync()}
 function queueSync(){clearTimeout(syncT);syncT=setTimeout(()=>syncNow('edit'),1200)}
 
-function setSync(s){SYNC=s;syncPill();renderAccount()}
+function setSync(s,msg){SYNC=s;SYNC_MSG=msg||'';syncPill();renderAccount()}
+function why(e){
+  const m=String((e&&e.message)||e||'');
+  if(/schema cache|column .* does not exist/i.test(m)) return 'Database is missing a column — run the latest migration SQL';
+  if(/row-level security/i.test(m))                    return 'Blocked by a database policy — re-run the schema SQL';
+  if(/relation .* does not exist/i.test(m))            return 'A table is missing — run the schema SQL';
+  if(/JWT|token|expired/i.test(m))                     return 'Session expired — sign out and back in';
+  if(/Failed to fetch|NetworkError|load failed/i.test(m)) return 'No connection to Supabase';
+  return m.slice(0,90);
+}
 function syncPill(){
   const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
   if(!dot) return;
   dot.className='sync-dot';
   const map={off:['','Local only'],idle:['on','Synced'],busy:['','Syncing'],
-             err:['off','Offline — will retry'],anon:['off','Not signed in']};
+             err:['off','Sync problem'],anon:['off','Not signed in']};
   const [cls,label]=map[SYNC]||map.off;
   if(cls) dot.classList.add(cls);
   txt.textContent=label;
@@ -1789,9 +2002,9 @@ async function syncNow(reason){
   try{
     ok=await pullMerge()&&ok;
     ok=await pushDirty()&&ok;
-    setSync(ok?'idle':'err');
+    setSync(ok?'idle':'err',ok?'':SYNC_MSG);
   }catch(e){
-    console.warn('sync failed',reason,e);setSync('err');ok=false;
+    console.warn('sync failed',reason,e);setSync('err',why(e));ok=false;
   }finally{syncing=false}
   return ok;
 }
@@ -1805,13 +2018,22 @@ async function pullMerge(){
       CLOUD.from('days').select('*').eq('user_id',ME.id).gte('date',since),
       CLOUD.from('weights').select('date,kg').eq('user_id',ME.id),
     ]);
-    // maybeSingle normally gives one row, but tolerate an array either way —
-    // silently mis-reading this would look exactly like a brand new account
+    // supabase-js reports failures on .error instead of throwing. Without this
+    // check a rejected read looked like an empty account, and signing in on a
+    // new device would start the whole setup again.
+    const bad=[st,dy,wt].find(r=>r&&r.error);
+    if(bad) throw bad.error;
+
+    // maybeSingle normally gives one row, but tolerate an array either way
     const srow=Array.isArray(st.data)?st.data[0]:st.data;
-    if(srow&&srow.data&&!settingsDirty) applySettings(srow.data);
+    const days=dy.data||[];
+    SERVER_ACCOUNT=!!(srow&&srow.data)||days.length>0;
+    // newest settings win; a device with no local copy always takes the server's
+    if(srow&&srow.data&&(!S._su||String(srow.updated_at||'')>String(S._su)))
+      applySettings(srow.data,srow.updated_at);
 
     let changed=false;
-    (dy.data||[]).forEach(r=>{
+    days.forEach(r=>{
       const server=normDay(r);
       const local=S.days[r.date];
       const merged=mergeDay(local,server);
@@ -1824,9 +2046,9 @@ async function pullMerge(){
     if(ks.length) S.weight=S.weights[ks[ks.length-1]];
 
     save();
-    if(changed) softRender();
+    if(changed){DATA_REV++;softRender()}
     return true;
-  }catch(e){console.warn('pull failed',e);return false}
+  }catch(e){console.warn('pull failed',e);SYNC_MSG=why(e);return false}
 }
 
 async function pushDirty(){
@@ -1834,7 +2056,7 @@ async function pushDirty(){
   try{
     if(settingsDirty){
       const {error}=await CLOUD.from('settings')
-        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:now()});
+        .upsert({user_id:ME.id,data:settingsBlob(),updated_at:S._su||now()});
       if(error) throw error;
       settingsDirty=false;
       await CLOUD.from('profiles').upsert({id:ME.id,display_name:S.name||'Friend',
@@ -1843,13 +2065,8 @@ async function pushDirty(){
     }
     for(const d of [...DIRTY]){
       const r=S.days[d];if(!r){DIRTY.delete(d);continue}
-      const m=dMacros(d);
-      const {error}=await CLOUD.from('days').upsert({
-        user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
-        del:r._del||[],steps_u:r._us||null,water_u:r._uw||null,
-        kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
-        updated_at:r._u||now()});
-      if(error) throw error;
+      const err=await upsertDay(d,r);
+      if(err) throw err;
       DIRTY.delete(d);
     }
     if(WDIRTY.size){
@@ -1859,14 +2076,33 @@ async function pushDirty(){
       WDIRTY.clear();
     }
     return true;
-  }catch(e){console.warn('push failed',e);return false}
+  }catch(e){console.warn('push failed',e);SYNC_MSG=why(e);return false}
 }
 let WDIRTY=new Set();
+
+/* The merge columns arrived in migration 02. If the database hasn't
+   had it applied, fall back to the original shape rather than
+   failing every save — the app still works, it just can't merge
+   two devices editing the same day. */
+async function upsertDay(d,r){
+  const m=dMacros(d);
+  const row={user_id:ME.id,date:d,foods:r.foods,acts:r.acts,steps:r.steps,water:r.water,
+    kcal_in:dIn(d),kcal_out:dOut(d),protein:Math.round(m.p*10)/10,points:dayPoints(d),
+    updated_at:r._u||now()};
+  if(!SLIM){row.del=r._del||[];row.steps_u=r._us||null;row.water_u=r._uw||null}
+  const {error}=await CLOUD.from('days').upsert(row);
+  if(error&&!SLIM&&/del|steps_u|water_u|schema cache/i.test(error.message||'')){
+    SLIM=true;
+    console.warn('days table is missing the migration-02 columns — falling back');
+    return upsertDay(d,r);
+  }
+  return error||null;
+}
 
 /* redraw without kicking off another sync */
 function softRender(){
   recomputeStats();
-  renderDayHeader();renderRing();renderTiles();renderMeals();
+  renderDayHeader();renderHome();
   renderActivity();
   if(document.getElementById('screen-progress').classList.contains('active')) renderProgress();
   if(document.getElementById('screen-profile').classList.contains('active')) renderProfile();
@@ -1959,23 +2195,38 @@ async function onSignedIn(user){
   await CLOUD.from('profiles').upsert({id:ME.id,
     display_name:S.name||user.user_metadata?.display_name||user.email.split('@')[0],
     avatar:S.avatar,updated_at:new Date().toISOString()},{onConflict:'id'});
+  SERVER_ACCOUNT=false;
   const pulled=await pullMerge();
-  if(!S.name) S.name=user.user_metadata?.display_name||user.email.split('@')[0];
   await loadChallenge();
-  // anything created before signing in belongs to this account now
+
+  // Whether to run setup is the server's call, not this device's. A new phone,
+  // a new domain or a cleared browser all start with empty local storage, and
+  // none of them mean a new account.
+  const known=SERVER_ACCOUNT||S.onboarded;
+  if(known) S.onboarded=true;
+  if(!S.name) S.name=user.user_metadata?.display_name||user.email.split('@')[0];
+
   Object.keys(S.days).forEach(d=>DIRTY.add(d));
   Object.keys(S.weights).forEach(d=>WDIRTY.add(d));
-  settingsDirty=true;
   startHeartbeat();
-  // only treat this as a new account when the pull actually succeeded —
-  // otherwise a flaky connection would drop a returning user into setup
-  if(!S.onboarded&&(pulled||!S.name)){
+
+  if(!pulled){
+    // We could not read the account, so we cannot know. Never run setup here:
+    // finishing it would push blank defaults over settings that may be fine.
+    document.getElementById('onboard').classList.add('hidden');
+    render();goScreen('home');
+    toast('Signed in — could not load your data yet, retrying');
+    setSync('err',SYNC_MSG||'Could not load your account');
+    syncNow('signin');
+    return;
+  }
+  if(!known){
+    settingsDirty=true;           // genuinely new: safe to write defaults
     document.getElementById('ob-name').value=S.name||'';
     document.getElementById('onboard').classList.remove('hidden');
   }else{
     document.getElementById('onboard').classList.add('hidden');
     render();goScreen('home');
-    if(!pulled) toast('Signed in — couldn\u2019t reach your data yet, will retry');
   }
   syncNow('signin');
 }
@@ -2015,12 +2266,12 @@ function renderAccount(){
     return;
   }
   const state={idle:['Synced','var(--accent)'],busy:['Syncing…','var(--muted)'],
-               err:['Offline — will retry','var(--c)'],off:['Local only','var(--faint)']}[SYNC]||['','var(--faint)'];
+               err:[SYNC_MSG||'Sync failed — will retry','var(--c)'],off:['Local only','var(--faint)']}[SYNC]||['','var(--faint)'];
   slot.innerHTML=`<div class="acct">
       <div class="acct-av">${esc(initials(S.name))}</div>
       <div class="acct-info">
         <div class="acct-mail">${esc(ME.email)}</div>
-        <div class="acct-state" style="color:${state[1]}">${esc(state[0])}</div>
+        <div class="acct-state" style="color:${state[1]};white-space:normal">${esc(state[0])}</div>
       </div>
     </div>
     <div class="row" style="cursor:pointer" onclick="pushAll()">
@@ -2066,7 +2317,7 @@ async function doInstall(){
 /* ══ RENDER ══ */
 function render(){
   recomputeStats();
-  renderDayHeader();renderRing();renderTiles();renderMeals();
+  renderDayHeader();renderHome();
   renderActivity();renderProgress();renderProfile();
   clock();save();renderAccount();renderInstall();
 }
@@ -2108,6 +2359,7 @@ function goToday(){VIEW=today();render()}
 
 function renderRing(){
   const svg=document.getElementById('ring');
+  if(!svg) return;   // the calories block can be hidden
   while(svg.children.length>1) svg.removeChild(svg.lastChild);
   const cx=68,cy=68,r=54,C=2*Math.PI*r,GAP=(3.5/360)*C;
   const m=macros(),eaten=inCal();
@@ -2150,16 +2402,20 @@ function renderRing(){
 }
 
 function renderTiles(){
-  const d=D();
-  const wg=S.waterGoal;
+  const d=D(),wg=S.waterGoal;
+  const has=id=>document.getElementById(id);
+  if(has('wt-v')){
   document.getElementById('wt-v').textContent=d.water;
   document.getElementById('wt-g').textContent=wg;
   document.getElementById('wt-bar').style.width=Math.min(100,d.water/wg*100)+'%';
   const L=x=>(Math.round(x*CUP_ML/100)/10).toFixed(1).replace(/\.0$/,'');
   document.getElementById('wt-sub').textContent=`${L(d.water)} L of ${L(wg)} L`;
-  document.getElementById('sp-v').textContent=d.steps.toLocaleString();
-  document.getElementById('sp-sub').textContent='Goal '+S.stepGoal.toLocaleString();
-  document.getElementById('sp-bar').style.width=Math.min(100,d.steps/S.stepGoal*100)+'%';
+  }
+  if(has('sp-v')){
+    document.getElementById('sp-v').textContent=d.steps.toLocaleString();
+    document.getElementById('sp-sub').textContent='Goal '+S.stepGoal.toLocaleString();
+    document.getElementById('sp-bar').style.width=Math.min(100,d.steps/S.stepGoal*100)+'%';
+  }
 }
 
 function fmtTime(t){
@@ -2171,6 +2427,7 @@ function fmtTime(t){
 }
 function renderMeals(){
   const box=document.getElementById('meals');
+  if(!box) return;   // the meals block can be hidden
   box.innerHTML='';
   const day=D();
   MEALS.forEach(M=>{
@@ -2259,6 +2516,300 @@ function renderActivity(){
   }
 }
 
+
+/* ══ CUSTOMISABLE HOME ═══════════════════════════════════════
+   The home screen is a list of blocks the user orders, resizes
+   and hides. Two consecutive half-width blocks pair into a row. */
+const BLOCKS={
+  ring:  {name:'Calories & macros', ico:'◎',  sizes:['full']},
+  water: {name:'Water',             ico:'💧', sizes:['half','full']},
+  steps: {name:'Steps',             ico:'🚶', sizes:['half','full']},
+  points:{name:'Challenge points',  ico:'🏆', sizes:['half','full'], note:'Appears once you join a challenge'},
+  week:  {name:'This week',         ico:'📊', sizes:['full']},
+  meals: {name:'Meals',             ico:'🍽️', sizes:['full']},
+};
+const DEFAULT_LAYOUT=[
+  {id:'ring',  on:true,  w:'full'},
+  {id:'water', on:true,  w:'half'},
+  {id:'steps', on:true,  w:'half'},
+  {id:'points',on:true,  w:'full'},
+  {id:'meals', on:true,  w:'full'},
+  {id:'week',  on:false, w:'full'},
+];
+function layout(){
+  // repair anything missing or renamed so a bad save can't empty the screen
+  const seen=new Set();
+  const out=(S.layout||[]).filter(b=>b&&BLOCKS[b.id]&&!seen.has(b.id)&&seen.add(b.id))
+    .map(b=>({id:b.id,on:b.on!==false,w:BLOCKS[b.id].sizes.includes(b.w)?b.w:BLOCKS[b.id].sizes[0]}));
+  DEFAULT_LAYOUT.forEach(d=>{if(!seen.has(d.id)) out.push({...d})});
+  return out;
+}
+function setLayout(l){S.layout=l;touchSettings();save()}
+
+const TPL={
+  ring: ()=>`<div class="card">
+      <div class="ring-row">
+        <div class="ring-wrap">
+          <svg id="ring" width="136" height="136" viewBox="0 0 136 136">
+            <circle cx="68" cy="68" r="54" fill="none" stroke="var(--track)" stroke-width="10"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num" id="ring-n">0</div>
+            <div class="ring-cap" id="ring-cap">kcal left</div>
+            <div class="ring-goal" id="ring-goal">/ 2,000</div>
+          </div>
+        </div>
+        <div class="macro-list">
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--p)"></span>
+              <span class="macro-name">Protein</span>
+              <span class="macro-fig"><span id="mp-v">0</span><span class="of">/<span id="mp-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mp-bar" style="background:var(--p);width:0%"></div></div>
+          </div>
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--c)"></span>
+              <span class="macro-name">Carbs</span>
+              <span class="macro-fig"><span id="mc-v">0</span><span class="of">/<span id="mc-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mc-bar" style="background:var(--c);width:0%"></div></div>
+          </div>
+          <div>
+            <div class="macro-top">
+              <span class="macro-dot" style="background:var(--f)"></span>
+              <span class="macro-name">Fat</span>
+              <span class="macro-fig"><span id="mf-v">0</span><span class="of">/<span id="mf-g">0</span>g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill" id="mf-bar" style="background:var(--f);width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-cell"><div class="sc-val" id="st-rem" style="color:var(--accent)">0</div><div class="sc-lbl">Remaining</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-con">0</div><div class="sc-lbl">Consumed</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-pro" style="color:var(--p)">0g</div><div class="sc-lbl">Protein left</div></div>
+        <div class="stat-cell"><div class="sc-val" id="st-brn" style="color:var(--c)">0</div><div class="sc-lbl">Burned</div></div>
+      </div>
+    </div>`,
+  water:()=>`<div class="tile" id="tile-water" onclick="openWater()">
+        <div class="tile-hd"><span class="micro">Water</span><span class="tile-icon" style="color:var(--water)">💧</span></div>
+        <div class="tile-val"><span id="wt-v">0</span><span class="tv-of"> /<span id="wt-g">8</span> cups</span></div>
+        <div class="tile-sub" id="wt-sub">0 L of 2 L</div>
+        <div class="tile-bar"><div class="tile-fill" id="wt-bar" style="background:var(--water);width:0%"></div></div>
+      </div>`,
+  steps:()=>`<div class="tile" id="tile-steps" onclick="openSteps()">
+        <div class="tile-hd"><span class="micro">Steps</span><span class="tile-icon" style="color:var(--steps)">🚶</span></div>
+        <div class="tile-val" id="sp-v">0</div>
+        <div class="tile-sub" id="sp-sub">Goal 10,000</div>
+        <div class="tile-bar"><div class="tile-fill" id="sp-bar" style="background:var(--steps);width:0%"></div></div>
+      </div>`,
+  meals:()=>`<div class="sec-label">
+      <span class="micro">Meals today</span>
+      <button class="sec-link" onclick="openFullLog()">Full log</button>
+    </div>
+    <div id="meals"></div>`,
+  points:w=>`<div class="card pts-card${w==='full'?' lg':''}" onclick="goScreen('community')">
+      <div class="tile-hd"><span class="micro">Challenge today</span><span class="tile-icon">🏆</span></div>
+      <div style="display:flex;align-items:baseline;gap:7px">
+        <span class="tile-val" id="hp-n">0</span><span class="tv-of">/ 4 points</span>
+      </div>
+      <div class="tile-sub" id="hp-sub"></div>
+      ${w==='full'?'<div class="pts-legend" id="hp-tags" style="margin-top:13px"></div>':''}
+    </div>`,
+  week: ()=>`<div class="card">
+      <div class="chart-hd"><h3>This week</h3><span class="ch-note" id="hw-avg">— avg</span></div>
+      <div class="chart-cap">Calories in · dashed line is your goal</div>
+      <div class="chart-area"><svg class="chart-svg" id="hw-chart" viewBox="0 0 320 118"></svg></div>
+    </div>`,
+};
+
+function renderHome(){
+  const box=document.getElementById('home-blocks');
+  if(!box) return;
+  if(CUST){renderCustomise();return}
+  const bar=document.getElementById('cust-bar');
+  bar.className='';bar.innerHTML='';
+  box.innerHTML='';
+  const L=layout().filter(b=>b.on);
+  for(let i=0;i<L.length;i++){
+    const b=L[i], next=L[i+1];
+    // a half-width block pairs with the next one if that is also half
+    if(b.w==='half'&&next&&next.w==='half'){
+      const row=document.createElement('div');
+      row.className='tile-grid';
+      row.innerHTML=TPL[b.id](b.w)+TPL[next.id](next.w);
+      box.appendChild(row);i++;
+    }else{
+      const wrap=document.createElement('div');
+      wrap.innerHTML=TPL[b.id](b.w==='half'?'full':b.w);
+      const node=wrap.firstElementChild;
+      if(b.w==='half'&&(b.id==='water'||b.id==='steps')) node.classList.add('tile-lg');
+      if(node&&node.classList.contains('tile')) node.classList.add('tile-lg');
+      box.appendChild(wrap.firstElementChild?node:wrap);
+      while(wrap.firstElementChild) box.appendChild(wrap.firstElementChild);
+    }
+  }
+  const add=document.createElement('button');
+  add.className='add-block-btn';
+  add.textContent='⚙  Customise home';
+  add.onclick=enterCustomise;
+  box.appendChild(add);
+
+  // long-press anywhere on the blocks also opens customise
+  let lp=null;
+  box.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button,input,select,a')) return;
+    lp=setTimeout(()=>{if(navigator.vibrate)navigator.vibrate(8);enterCustomise()},650);
+  });
+  ['pointerup','pointermove','pointercancel','scroll'].forEach(ev=>
+    box.addEventListener(ev,()=>{clearTimeout(lp)},{passive:true}));
+
+  renderRing();renderTiles();renderMeals();renderPoints();
+  if(document.getElementById('hw-chart')) drawWeek('hw-chart','hw-avg');
+}
+
+function renderPoints(){
+  const n=document.getElementById('hp-n');
+  if(!n) return;
+  const card=n.closest('.pts-card');
+  if(!S.ch){
+    if(card) card.style.display='none';
+    return;
+  }
+  if(card) card.style.display='';
+  n.textContent=pointsToday();
+  const sub=document.getElementById('hp-sub');
+  if(sub) sub.textContent=(S.ch.name||'').toUpperCase();
+  const tags=document.getElementById('hp-tags');
+  if(tags){
+    const g=macroGoals();
+    const pts=[
+      {t:'Food',ok:dIn(VIEW)>0},
+      {t:S.stepGoal.toLocaleString()+' steps',ok:dSteps(VIEW)>=S.stepGoal},
+      {t:g.p+'g protein',ok:dMacros(VIEW).p>=g.p&&g.p>0},
+      {t:S.waterGoal+' cups',ok:dWater(VIEW)>=S.waterGoal},
+    ];
+    tags.innerHTML=pts.map(p=>`<span class="pt-tag${p.ok?' hit':''}">${p.ok?'✓ ':''}${esc(p.t)}</span>`).join('');
+  }
+}
+
+/* ── customise mode ── */
+let CUST=false;
+function enterCustomise(){CUST=true;renderHome();document.querySelector('#screen-home').scrollTop=0}
+function exitCustomise(){CUST=false;renderHome()}
+
+function renderCustomise(){
+  const bar=document.getElementById('cust-bar');
+  bar.className='cust-bar';
+  bar.innerHTML=
+    `<div><div class="cb-t">Customise home</div><div class="cb-s">Drag to reorder · tap the eye to hide</div></div>
+     <button class="cust-done" onclick="exitCustomise()">Done</button>`;
+  const box=document.getElementById('home-blocks');
+  box.innerHTML='';
+  const list=document.createElement('div');
+  list.className='cust-list';list.id='cust-list';
+  layout().forEach(b=>list.appendChild(custRow(b)));
+  box.appendChild(list);
+  const note=document.createElement('div');
+  note.className='note';note.style.textAlign='center';note.style.marginTop='14px';
+  note.textContent='Two half-width blocks sitting next to each other share a row.';
+  box.appendChild(note);
+  const reset=document.createElement('button');
+  reset.className='add-block-btn';reset.textContent='Reset to default layout';
+  reset.onclick=()=>{if(confirm('Put the home screen back to its original layout?')){setLayout(DEFAULT_LAYOUT.map(d=>({...d})));renderCustomise()}};
+  box.appendChild(reset);
+}
+
+function custRow(b){
+  const meta=BLOCKS[b.id];
+  const row=document.createElement('div');
+  row.className='cust-row'+(b.on?'':' off');
+  row.dataset.id=b.id;
+  const showNote=meta.note&&b.id==='points'&&!S.ch;
+  row.innerHTML=`
+    <span class="cust-grip">⠿</span>
+    <span class="cust-ico">${meta.ico}</span>
+    <span class="cust-name">${esc(meta.name)}${showNote?`<div class="cust-note">${esc(meta.note)}</div>`:''}</span>
+    ${meta.sizes.length>1?`<span class="size-seg">
+        <button data-w="half" class="${b.w==='half'?'on':''}">½</button>
+        <button data-w="full" class="${b.w==='full'?'on':''}">Full</button>
+      </span>`:''}
+    <button class="eye-btn${b.on?' on':''}" title="${b.on?'Hide':'Show'}">${b.on?'👁':'🚫'}</button>`;
+  row.querySelectorAll('.size-seg button').forEach(btn=>btn.onclick=e=>{
+    e.stopPropagation();
+    const L=layout();L.find(x=>x.id===b.id).w=btn.dataset.w;
+    setLayout(L);renderCustomise();
+  });
+  row.querySelector('.eye-btn').onclick=e=>{
+    e.stopPropagation();
+    const L=layout();const t=L.find(x=>x.id===b.id);t.on=!t.on;
+    setLayout(L);renderCustomise();
+  };
+  row.querySelector('.cust-grip').addEventListener('pointerdown',e=>startDrag(e,row));
+  return row;
+}
+
+/* Pointer-event drag. HTML5 drag-and-drop does nothing on iOS Safari,
+   so the row is moved with a transform and swapped with whichever
+   neighbour's midpoint it crosses. */
+function startDrag(e,row){
+  e.preventDefault();
+  const list=document.getElementById('cust-list');
+  const screen=document.querySelector('#screen-home');
+  let startY=e.clientY, dy=0;
+  row.classList.add('drag');
+  row.setPointerCapture?.(e.pointerId);
+
+  const move=ev=>{
+    dy=ev.clientY-startY;
+    row.style.transform=`translateY(${dy}px)`;
+    const rect=row.getBoundingClientRect();
+    const mid=rect.top+rect.height/2;
+    for(const sib of [...list.children]){
+      if(sib===row) continue;
+      const r=sib.getBoundingClientRect();
+      const smid=r.top+r.height/2;
+      // is the dragged row currently below this sibling in the DOM?
+      const rowIsAfter=!!(sib.compareDocumentPosition(row)&Node.DOCUMENT_POSITION_FOLLOWING);
+      if(rowIsAfter&&mid<smid){          // dragged up past it
+        list.insertBefore(row,sib);
+        // the row's resting position just moved, so shift the origin
+        // by the same amount or it jumps under the finger
+        startY-=r.height+8;
+        dy=ev.clientY-startY;row.style.transform=`translateY(${dy}px)`;
+        break;
+      }
+      if(!rowIsAfter&&mid>smid){         // dragged down past it
+        list.insertBefore(sib,row);
+        startY+=r.height+8;
+        dy=ev.clientY-startY;row.style.transform=`translateY(${dy}px)`;
+        break;
+      }
+    }
+    // nudge the page when dragging near an edge
+    const sr=screen.getBoundingClientRect();
+    if(ev.clientY<sr.top+70) screen.scrollTop-=8;
+    else if(ev.clientY>sr.bottom-70) screen.scrollTop+=8;
+  };
+  const up=ev=>{
+    row.classList.remove('drag');
+    row.style.transform='';
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+    document.removeEventListener('pointercancel',up);
+    const order=[...list.children].map(c=>c.dataset.id);
+    const L=layout();
+    setLayout(order.map(id=>L.find(x=>x.id===id)).filter(Boolean));
+    if(navigator.vibrate) navigator.vibrate(5);
+  };
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
+}
+
 /* ══ CHARTS ══ */
 const NS='http://www.w3.org/2000/svg';
 function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e}
@@ -2274,8 +2825,10 @@ function renderProgress(){
   weekChart();weightChart();
 }
 
-function weekChart(){
-  const svg=document.getElementById('wk-chart');
+function weekChart(){drawWeek('wk-chart','wk-avg')}
+function drawWeek(svgId,avgId){
+  const svg=document.getElementById(svgId);
+  if(!svg) return;
   svg.innerHTML='';
   const W=320,PLOT=92;
   const days=[];
@@ -2305,7 +2858,8 @@ function weekChart(){
   });
   const on=days.filter(d=>d.v>0);
   const avg=on.length?Math.round(on.reduce((a,d)=>a+d.v,0)/on.length):0;
-  document.getElementById('wk-avg').textContent=avg?avg.toLocaleString()+' avg':'— avg';
+  const a=document.getElementById(avgId);
+  if(a) a.textContent=avg?avg.toLocaleString()+' avg':'— avg';
 }
 
 function weightChart(){
@@ -2343,7 +2897,14 @@ function weightChart(){
   const diff=pts[pts.length-1].w-pts[0].w;
   del.textContent=(diff>0?'+':'')+fmtW(diff);
   del.style.color=Math.abs(diff)<.05?'var(--muted)':(S.goalType==='build'?(diff>0?'var(--accent)':'var(--muted)'):(diff<0?'var(--accent)':'var(--muted)'));
-  cap.textContent=`${pts.length} entries · now ${fmtW(pts[pts.length-1].w)}`;
+  const trend=adaptive();
+  let line=`${pts.length} entries · now ${fmtW(pts[pts.length-1].w)}`;
+  if(trend.slopeWeek!==undefined){
+    const dir=trend.slopeWeek<0?'losing':trend.slopeWeek>0?'gaining':'steady';
+    line+=` · ${dir} ${fmtRate(Math.abs(trend.slopeWeek))}/wk`;
+    if(S.goalType!=='maintain') line+=` (target ${fmtRate(actualRate())}/wk)`;
+  }
+  cap.textContent=line;
 }
 function shortD(k){const d=parseD(k);return d.getDate()+' '+MON[d.getMonth()]}
 
@@ -2354,6 +2915,39 @@ function renderProfile(){
     {cut:'Losing weight',maintain:'Maintaining weight',build:'Building muscle'}[S.goalType];
   const v=(id,x)=>{const e=document.getElementById(id);if(e&&e.value!==String(x))e.value=x};
   v('pf-goal',S.goal);v('pf-gtype',S.goalType);v('pf-alevel',S.actLevel);
+  v('pf-height',S.height==null?'':S.height);v('pf-age',S.age==null?'':S.age);v('pf-sex',S.sex||'');
+  const rr=document.getElementById('pf-rate-row');
+  if(rr) rr.style.display=S.goalType==='maintain'?'none':'';
+  const rs=document.getElementById('pf-rate');
+  if(rs){
+    const opts=rateChoices();
+    const want=opts.map(o=>`<option value="${o.kg}">${o.t} / week</option>`).join('');
+    if(rs.dataset.u!==S.unit){rs.innerHTML=want;rs.dataset.u=S.unit}
+    const near=opts.reduce((a,o)=>Math.abs(o.kg-S.rate)<Math.abs(a.kg-S.rate)?o:a,opts[0]);
+    rs.value=String(near.kg);
+  }
+  renderAdaptive();
+  const calc=document.getElementById('pf-calc');
+  if(calc){
+    const b=bmr(),m=maintenance();
+    if(!m) calc.textContent='Add your weight to estimate this';
+    else{
+      const ad=adaptive();
+      const measured=S.adaptive&&ad.ok;
+      const parts=measured
+        ? [`Measured over 28 days`,
+           `ate ${ad.meanIn.toLocaleString()}, trend ${ad.slopeWeek<0?'−':'+'}${fmtRate(Math.abs(ad.slopeWeek))}/wk`,
+           `= ${m.toLocaleString()} maintenance`]
+        : [`Resting ${b.toLocaleString()}`,
+           `× ${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} daily life`,
+           `= ${m.toLocaleString()} maintenance`];
+      if(S.goalType!=='maintain') parts.push(`${S.goalType==='cut'?'−':'+'} ${dailyDelta()} for ${fmtRate(weeklyRate())}/wk`);
+      if(noDeficitPossible()) parts.push('maintenance is near the 1,200 minimum — no deficit applied');
+      else if(rateCapped()) parts.push(`capped at 25% — about ${fmtRate(actualRate())}/wk`);
+      if(!S.height||!S.age) parts.push('add height & age to sharpen');
+      calc.innerHTML=parts.map(esc).join('<br>');
+    }
+  }
   v('pf-wgoal',S.waterGoal);v('pf-sgoal',S.stepGoal);v('pf-unit',S.unit);
   v('pf-dname',S.name);
   const g=macroGoals();
@@ -2363,6 +2957,84 @@ function renderProfile(){
   document.getElementById('pf-weight').textContent=S.weight?fmtW(S.weight):'—';
   document.getElementById('pf-emoji').textContent=S.avatar;
   document.querySelectorAll('.split-chip').forEach(c=>c.classList.toggle('active',c.dataset.split===S.split));
+}
+
+function renderAdaptive(){
+  const box=document.getElementById('pf-adapt');
+  if(!box) return;
+  if(!S.weight){box.innerHTML='';return}
+  const a=adaptive(), f=maintenanceFormula();
+  const pct=(n,d)=>Math.min(100,Math.round(n/d*100));
+
+  if(S.adaptive&&a.ok){
+    box.innerHTML=`<div class="ad-card ready">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured from your data</span></div>
+      <div class="ad-big">${a.baseline.toLocaleString()}<span style="font-size:12px;color:var(--faint)"> kcal</span></div>
+      <div class="ad-sub">From your last 28 days: you averaged ${a.meanIn.toLocaleString()} kcal
+        and your weight trend is ${trendWord(a.slopeWeek)}.
+        ${f?`The formula guessed ${f.toLocaleString()}.`:''}</div>
+      <button class="ad-off" onclick="useAdaptive(false)">Go back to the formula</button>
+    </div>`;
+    return;
+  }
+  if(S.adaptive&&!a.ok){
+    box.innerHTML=`<div class="ad-card">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured maintenance paused</span></div>
+      <div class="ad-sub">Using the formula for now — ${esc(a.reason)}.</div>
+      <button class="ad-off" onclick="useAdaptive(false)">Turn this off</button>
+    </div>`;
+    return;
+  }
+  if(a.ok&&S.adaptSnooze&&S.adaptSnooze>addDays(today(),-7)){
+    box.innerHTML=`<div class="ad-card">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Measured maintenance is ready</span></div>
+      <div class="ad-sub">Your data suggests ${a.baseline.toLocaleString()} kcal.</div>
+      <div class="ad-actions"><button class="ad-yes" onclick="useAdaptive(true)">Use my data</button></div>
+    </div>`;
+    return;
+  }
+  if(a.ok){
+    const diff=f?a.baseline-f:0;
+    box.innerHTML=`<div class="ad-card ready">
+      <div class="ad-hd"><span>📈</span><span class="ad-t">Your data disagrees with the formula</span></div>
+      <div class="ad-big">${a.baseline.toLocaleString()}<span style="font-size:12px;color:var(--faint)"> kcal</span></div>
+      <div class="ad-sub">Over 28 days you averaged ${a.meanIn.toLocaleString()} kcal a day and your weight
+        trend is ${trendWord(a.slopeWeek)} — which puts your real
+        maintenance ${f?`${Math.abs(diff)} kcal ${diff>0?'above':'below'} the ${f.toLocaleString()} the equation predicted`:'at this level'}.</div>
+      <div class="ad-actions">
+        <button class="ad-no" onclick="dismissAdaptive()">Not now</button>
+        <button class="ad-yes" onclick="useAdaptive(true)">Use my data</button>
+      </div>
+    </div>`;
+    return;
+  }
+  // still learning
+  box.innerHTML=`<div class="ad-card">
+    <div class="ad-hd"><span>📈</span><span class="ad-t">Learning your metabolism</span></div>
+    <div class="ad-sub">Keep logging and weighing in and the app will work out your real maintenance
+      from what actually happens, instead of estimating it.</div>
+    <div class="ad-bars">
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Days logged</span>
+        <span class="ad-bar"><span style="width:${pct(a.logged,a.need.logged)}%"></span></span>
+        <span class="ad-bar-n">${a.logged}/${a.need.logged}</span></div>
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Weigh-ins</span>
+        <span class="ad-bar"><span style="width:${pct(a.weighIns,a.need.weighIns)}%"></span></span>
+        <span class="ad-bar-n">${a.weighIns}/${a.need.weighIns}</span></div>
+      <div class="ad-bar-row"><span class="ad-bar-lbl">Days covered</span>
+        <span class="ad-bar"><span style="width:${pct(a.span,a.need.span)}%"></span></span>
+        <span class="ad-bar-n">${a.span}/${a.need.span}</span></div>
+    </div>
+  </div>`;
+}
+function useAdaptive(on){
+  S.adaptive=!!on;
+  if(on) S.autoGoal=true;
+  if(S.autoGoal!==false) S.goal=estimateGoal();
+  touchSettings();render();
+  toast(on?'Goal set to '+S.goal.toLocaleString()+' kcal from your data':'Back to the formula');
+}
+function dismissAdaptive(){
+  S.adaptSnooze=today();touchSettings();render();
 }
 
 /* ══ FULL LOG ══ */
@@ -2597,17 +3269,28 @@ async function createChallenge(){
   if(!from||!to||to<from){toast('Check the dates');return}
   if(!CLOUD||!ME){toast('Sign in first');return}
   try{
+    // Insert without asking for the row back. Reading it back at insert
+    // time needs a SELECT policy to pass before you're a member, which
+    // it can't. join_challenge runs with elevated rights, adds the
+    // membership and returns the row — one call, no policy race.
     let code,ins,tries=0;
     do{
       code=newCode();
-      ins=await CLOUD.from('challenges').insert({code,name,starts:from,ends:to,created_by:ME.id}).select().single();
+      ins=await CLOUD.from('challenges').insert({code,name,starts:from,ends:to,created_by:ME.id});
     }while(ins.error&&/duplicate|unique/i.test(ins.error.message||'')&&++tries<5);
     if(ins.error) throw ins.error;
-    await CLOUD.from('challenge_members').insert({challenge_id:ins.data.id,user_id:ME.id});
-    S.ch={id:ins.data.id,code:ins.data.code,name:ins.data.name,starts:ins.data.starts,ends:ins.data.ends};
+
+    const {data,error}=await CLOUD.rpc('join_challenge',{p_code:code});
+    if(error) throw error;
+    const c=Array.isArray(data)?data[0]:data;
+    if(!c) throw new Error('Created, but could not read it back');
+    S.ch={id:c.id,code:c.code,name:c.name,starts:c.starts,ends:c.ends};
     touchSettings();save();closeAll();renderChallenge();
     toast('Created — share code '+S.ch.code);
-  }catch(e){toast('Couldn’t create: '+(e.message||e))}
+  }catch(e){
+    closeAll();
+    toast('Could not create: '+why(e));
+  }
 }
 function openJoin(){document.getElementById('j-in').value='';open('ov-join')}
 async function joinChallenge(){
@@ -2624,7 +3307,7 @@ async function joinChallenge(){
     toast('Joined '+c.name);
   }catch(e){
     document.getElementById('j-note').textContent=
-      /No challenge/i.test(e.message||'')?'No challenge with that code — check it and try again.':(e.message||String(e));
+      /No challenge/i.test(e.message||'')?'No challenge with that code — check it and try again.':why(e);
   }
 }
 async function leaveChallenge(){
@@ -2645,6 +3328,8 @@ function goScreen(id){
   document.getElementById('screen-'+id).classList.add('active');
   const n=document.getElementById('nav-'+id);if(n)n.classList.add('active');
   document.querySelector('.fab').classList.toggle('hide',id==='profile'||id==='community');
+  if(id!=='home'&&CUST) CUST=false;
+  if(id==='home') renderHome();
   if(id==='progress') renderProgress();
   if(id==='profile') renderProfile();
   if(id==='activity') renderActivity();
@@ -3121,7 +3806,7 @@ function wLitres(){
 }
 function addWater(n){
   const d=D();d.water=Math.max(0,Math.min(40,d.water+n));touch(VIEW,'water');
-  document.getElementById('w-n').textContent=d.water;wLitres();renderTiles();save();
+  document.getElementById('w-n').textContent=d.water;wLitres();renderTiles();renderPoints();save();
 }
 function openSteps(){document.getElementById('s-in').value=D().steps||'';open('ov-steps')}
 function saveSteps(){D().steps=Math.max(0,parseInt(document.getElementById('s-in').value)||0);touch(VIEW,'steps');closeAll();render()}
@@ -3137,7 +3822,7 @@ function saveWeight(){
   if(!v||v<=0){toast('Enter a weight');return}
   const kg=toKg(v);
   if(kg<20||kg>400){toast('That looks off — check the unit');return}
-  S.weights[d]=kg;WDIRTY.add(d);queueSync();
+  S.weights[d]=kg;DATA_REV++;WDIRTY.add(d);queueSync();
   if(d>=Object.keys(S.weights).sort().pop()) S.weight=kg;
   closeAll();render();renderProgress();toast('Weight logged');
 }
@@ -3156,10 +3841,35 @@ function openAvatar(){
 }
 
 /* ══ PROFILE ACTIONS ══ */
-function setGoal(){touchSettings();S.goal=Math.max(1000,Math.min(6000,parseInt(document.getElementById('pf-goal').value)||2000));render()}
-function setGoalType(){touchSettings();S.goalType=document.getElementById('pf-gtype').value;render()}
-function setActLevel(){touchSettings();S.actLevel=document.getElementById('pf-alevel').value;render()}
-function recalcGoal(){S.goal=estimateGoal();touchSettings();render();toast(S.weight?'Goal set to '+S.goal+' kcal':'Estimated without weight — log it for accuracy')}
+function setGoal(){
+  touchSettings();
+  S.goal=Math.max(1000,Math.min(6000,parseInt(document.getElementById('pf-goal').value)||2000));
+  S.autoGoal=false;      // typed by hand — stop recalculating over it
+  render();
+}
+function setGoalType(){touchSettings();S.goalType=document.getElementById('pf-gtype').value;autoGoal();render()}
+function setActLevel(){touchSettings();S.actLevel=document.getElementById('pf-alevel').value;autoGoal();render()}
+function setRate(){touchSettings();S.rate=parseFloat(document.getElementById('pf-rate').value)||0;autoGoal();render()}
+function setHeight(){
+  touchSettings();
+  const v=parseFloat(document.getElementById('pf-height').value);
+  S.height=(v&&v>=90&&v<=250)?v:null;
+  autoGoal();render();
+}
+function setAge(){
+  touchSettings();
+  const v=parseInt(document.getElementById('pf-age').value);
+  S.age=(v&&v>=13&&v<=110)?v:null;
+  autoGoal();render();
+}
+function setSex(){touchSettings();S.sex=document.getElementById('pf-sex').value;autoGoal();render()}
+/* Keep the goal in step with the inputs, but never move a number the
+   person typed in themselves. */
+function autoGoal(){if(S.autoGoal!==false) S.goal=estimateGoal()}
+function recalcGoal(){
+  S.autoGoal=true;S.goal=estimateGoal();touchSettings();render();
+  toast(maintenance()?'Goal set to '+S.goal.toLocaleString()+' kcal':'Add your weight in Profile for a real estimate');
+}
 function setSplit(e){S.split=e.dataset.split;touchSettings();render()}
 function setWaterGoal(){touchSettings();S.waterGoal=Math.max(1,Math.min(30,parseInt(document.getElementById('pf-wgoal').value)||8));render()}
 function setStepGoal(){touchSettings();S.stepGoal=Math.max(1000,Math.min(50000,parseInt(document.getElementById('pf-sgoal').value)||10000));render()}
@@ -3207,43 +3917,119 @@ function obPick(e,t){
   e.classList.add('on');
   if(t==='goal') obGoal=e.dataset.goal; else obAct=e.dataset.act;
 }
+function obHUnit(){
+  const ft=document.getElementById('ob-hunit').value==='ft';
+  document.getElementById('ob-h2').hidden=!ft;
+  document.getElementById('ob-h1').placeholder=ft?'5':'170';
+}
+function readHeight(u,a,b){
+  const v1=parseFloat(document.getElementById(a).value);
+  if(!v1||v1<=0) return null;
+  if(document.getElementById(u).value==='ft'){
+    const inch=parseFloat(document.getElementById(b).value)||0;
+    return Math.round((v1*30.48+inch*2.54)*10)/10;
+  }
+  return Math.round(v1*10)/10;
+}
 function obGo(a,b){
   document.getElementById('ob-'+a).classList.remove('active');
   document.getElementById('ob-'+b).classList.add('active');
   document.getElementById('ob-fill').style.width=(b/5*100)+'%';
   document.getElementById('onboard').scrollTop=0;
 }
-function obNext(s){
-  if(s===1){
+function obNext(step){
+  if(step===1){
     const n=document.getElementById('ob-name').value.trim();
     if(!n){toast('Enter a name to continue');document.getElementById('ob-name').focus();return}
     S.name=n.slice(0,20);
   }
-  if(s===2){if(!obGoal){toast('Pick a goal');return}S.goalType=obGoal}
-  if(s===3){if(!obAct){toast('Pick an activity level');return}S.actLevel=obAct}
-  if(s===4){
-    const v=parseFloat(document.getElementById('ob-weight').value);
+  if(step===2){if(!obGoal){toast('Pick a goal');return}S.goalType=obGoal}
+  if(step===3){
+    const w=parseFloat(document.getElementById('ob-weight').value);
     S.unit=document.getElementById('ob-unit').value;
-    if(v&&v>0){
-      const kg=toKg(v);
-      if(kg<20||kg>400){toast('That looks off — check the unit');return}
-      S.weight=kg;S.weights[today()]=kg;
-    }
+    if(!w||w<=0){toast('Enter your weight, or skip this step');return}
+    const kg=toKg(w);
+    if(kg<25||kg>400){toast('That weight looks off — check the unit');return}
+    S.weight=kg;S.weights[today()]=kg;WDIRTY.add(today());
+    const h=readHeight('ob-hunit','ob-h1','ob-h2');
+    if(h!=null&&(h<90||h>250)){toast('That height looks off — check the unit');return}
+    S.height=h;
+    const a=parseInt(document.getElementById('ob-age').value);
+    if(a&&(a<13||a>110)){toast('Enter an age between 13 and 110');return}
+    S.age=a||null;
+    S.sex=document.getElementById('ob-sex').value;
+    buildLifestyle();
+  }
+  if(step===4){
+    if(!obAct){toast('Pick the one closest to your day');return}
+    S.actLevel=obAct;
     obResults();
   }
-  obGo(s,s+1);
+  obGo(step,step+1);
 }
-function obSkipWeight(){S.unit=document.getElementById('ob-unit').value;obResults();obGo(4,5)}
+function obSkipWeight(){
+  S.unit=document.getElementById('ob-unit').value;
+  buildLifestyle();obGo(3,4);
+}
+function buildLifestyle(){
+  const box=document.getElementById('ob-life');
+  if(box.dataset.built) return;
+  box.innerHTML=Object.entries(LIFESTYLE).map(([k,v])=>
+    `<div class="ob-opt" data-act="${k}" onclick="obPick(this,'act')">
+       <div class="oo-t">${esc(v.t)}</div><div class="oo-s">${esc(v.s)}</div></div>`).join('');
+  box.dataset.built='1';
+}
+
+/* rate options, shown in whichever unit the person uses */
+function rateChoices(){
+  return S.unit==='lb'
+    ? [{kg:0.23,t:'0.5 lb'},{kg:0.45,t:'1 lb'},{kg:0.68,t:'1.5 lb'}]
+    : [{kg:0.25,t:'0.25 kg'},{kg:0.5,t:'0.5 kg'},{kg:0.75,t:'0.75 kg'}];
+}
 function obResults(){
+  const wrap=document.getElementById('ob-rate-wrap');
+  const maint=maintenance();
+  if(S.goalType==='maintain'||!maint){
+    wrap.hidden=true;S.rate=0;
+  }else{
+    wrap.hidden=false;
+    document.getElementById('ob-rate-lbl').textContent=
+      (S.goalType==='cut'?'How fast do you want to lose?':'How fast do you want to gain?')+' (per week)';
+    const box=document.getElementById('ob-rates');
+    box.innerHTML=rateChoices().map(r=>
+      `<div class="split-chip${Math.abs(r.kg-S.rate)<0.02?' active':''}" data-kg="${r.kg}">${r.t}</div>`).join('');
+    box.querySelectorAll('.split-chip').forEach(c=>c.onclick=()=>{
+      S.rate=parseFloat(c.dataset.kg);obResults();
+    });
+  }
   S.goal=estimateGoal();
   const g=macroGoals();
   document.getElementById('ob-cal').textContent=S.goal.toLocaleString();
   document.getElementById('ob-p').textContent=g.p+'g';
   document.getElementById('ob-c').textContent=g.c+'g';
   document.getElementById('ob-f').textContent=g.f+'g';
-  document.getElementById('ob-basis').textContent=S.weight
-    ?'Estimated from your weight, activity level and goal.'
-    :'Estimated from your activity level and goal. Log your weight any time to sharpen it.';
+  const b=bmr();
+  document.getElementById('ob-basis').textContent=
+    !maint ? 'No weight given, so set a target yourself in Profile — everything else still works.'
+    : (S.height&&S.age ? 'Mifflin-St Jeor, then your daily life. Workouts you log are added on top.'
+                       : 'Estimated from weight alone. Add height and age in Profile to sharpen it.');
+  document.getElementById('ob-break').textContent=
+    maint ? `Resting ${b.toLocaleString()} · daily life ×${(LIFESTYLE[S.actLevel]||LIFESTYLE.light).m} = ${maint.toLocaleString()} maintenance`
+          : '';
+  const warn=document.getElementById('ob-warn');
+  warn.style.color='var(--c)';
+  if(noDeficitPossible()){
+    warn.textContent='Your estimated maintenance is already close to the 1,200 kcal minimum, so this target does not create a deficit. Worth talking to a GP or dietitian before trying to lose weight from here.';
+  }else if(maint&&rateCapped()){
+    warn.textContent=`Deficits are capped at a quarter of maintenance, so this has been eased to about ${fmtRate(actualRate())} a week.`;
+  }else{warn.textContent='';}
+}
+function trendWord(slopeWeek){
+  if(Math.abs(slopeWeek)<0.03) return 'flat';
+  return `${slopeWeek<0?'down':'up'} ${fmtRate(Math.abs(slopeWeek))} a week`;
+}
+function fmtRate(kg){
+  return S.unit==='lb' ? (Math.round(kg*2.20462*10)/10)+' lb' : (Math.round(kg*100)/100)+' kg';
 }
 function finishOnboard(){
   S.onboarded=true;
