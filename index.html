@@ -19,6 +19,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* the hidden attribute loses to any author display rule, and several
+   things here are display:flex — so make it win */
+[hidden]{display:none!important}
 :root{
   --bg:#08090F;
   --surface:#11131B;
@@ -456,6 +459,10 @@ body{
 }
 .src-tag.mine{background:rgba(195,245,63,.16);color:var(--accent)}
 .src-tag.brand{background:rgba(167,139,250,.16);color:var(--f)}
+.src-tag.comm{background:rgba(251,140,60,.16);color:var(--c)}
+.src-tag.dish{background:rgba(255,255,255,.07);color:var(--muted)}
+.res-del{background:none;border:none;color:var(--faint);font-size:14px;cursor:pointer;padding:0 0 0 4px}
+.src-note{font-size:10px;color:var(--faint);line-height:1.5;margin-top:7px}
 .online-hd{display:flex;align-items:center;gap:7px;margin-top:13px;margin-bottom:2px}
 .spin{
   display:inline-block;width:11px;height:11px;border:2px solid var(--line);
@@ -1214,6 +1221,7 @@ body{
           <button class="scan-btn" onclick="openScan()" title="Scan barcode">▥</button>
         </div>
         <div id="results" class="results" hidden></div>
+        <div id="comm-slot"></div>
         <div id="online-slot"></div>
         <div id="qchips"></div>
       </div>
@@ -1243,6 +1251,10 @@ body{
       <div class="check-row" id="save-custom" onclick="toggleSaveCustom()">
         <div class="check-box" id="sc-box"></div>
         <div class="check-txt">Also save to <strong>My foods</strong> for next time</div>
+      </div>
+      <div class="check-row" id="share-food" onclick="toggleShareFood()">
+        <div class="check-box" id="sf-box"></div>
+        <div class="check-txt">Share it with <strong>everyone</strong> — jollof, eba, a local brand<div class="src-note" style="margin-top:3px">Your first name shows next to it. You can remove it later.</div></div>
       </div>
       <div class="btns">
         <button class="btn btn-alt" onclick="closeAll()">Cancel</button>
@@ -1512,6 +1524,87 @@ const DB=[
  {n:'Nigerian Meat Pie',s:'1 (150g)',c:420,p:10,cb:42,f:24,g:'Nigerian'},
  {n:'Garden Egg',s:'100g',c:25,p:1,cb:5.7,f:0.2,g:'Nigerian'},
  {n:'Zobo drink',s:'250ml',c:60,p:0,cb:15,f:0,g:'Nigerian'},
+
+
+ /* ── Nigerian supermarket packs ── */
+ {n:'Indomie Instant Noodles',s:'1 pack (70g)',c:342,p:7,cb:45,f:14,g:'Pack'},
+ {n:'Indomie Hungry Man',s:'1 pack (120g)',c:586,p:12,cb:77,f:24,g:'Pack'},
+ {n:'Golden Penny Spaghetti',s:'100g dry',c:355,p:12,cb:73,f:1.5,g:'Pack'},
+ {n:'Golden Penny Semovita',s:'100g dry',c:360,p:10,cb:76,f:1,g:'Pack'},
+ {n:'Honeywell Semolina',s:'100g dry',c:358,p:10.5,cb:75,f:1,g:'Pack'},
+ {n:'Golden Morn',s:'55g serving',c:210,p:5,cb:40,f:3.5,g:'Pack'},
+ {n:'Milo powder',s:'20g (3 tsp)',c:80,p:1.5,cb:15,f:1.5,g:'Pack'},
+ {n:'Bournvita',s:'20g (3 tsp)',c:78,p:1.4,cb:16,f:0.9,g:'Pack'},
+ {n:'Peak Milk powder',s:'26g (4 tbsp)',c:130,p:6.5,cb:10,f:7,g:'Pack'},
+ {n:'Cowbell Milk powder',s:'26g',c:128,p:6,cb:11,f:6.8,g:'Pack'},
+ {n:'Three Crowns Milk',s:'26g',c:118,p:6,cb:11,f:5.5,g:'Pack'},
+ {n:'Peak Evaporated Milk',s:'50ml',c:67,p:3.4,cb:5,f:3.8,g:'Pack'},
+ {n:'Hollandia Yoghurt',s:'315ml bottle',c:205,p:7,cb:33,f:4.5,g:'Pack'},
+ {n:'Gino Tomato Paste',s:'70g sachet',c:60,p:3,cb:11,f:0.5,g:'Pack'},
+ {n:'Titus Sardines',s:'1 tin (125g)',c:250,p:22,cb:0,f:18,g:'Pack'},
+ {n:'Geisha Mackerel',s:'1 tin (155g)',c:230,p:20,cb:2,f:15,g:'Pack'},
+ {n:'Bama Mayonnaise',s:'1 tbsp (14g)',c:100,p:0.2,cb:0.6,f:11,g:'Pack'},
+ {n:'Beloxxi Cream Crackers',s:'3 biscuits (30g)',c:140,p:2.5,cb:20,f:5.5,g:'Pack'},
+ {n:'Gala Sausage Roll',s:'1 (55g)',c:190,p:5,cb:22,f:9,g:'Pack'},
+ {n:'Agege Bread',s:'1 slice (40g)',c:110,p:3.2,cb:21,f:1.4,g:'Pack'},
+ {n:'Maltina',s:'330ml bottle',c:200,p:1.5,cb:46,f:0,g:'Pack'},
+ {n:'Malta Guinness',s:'330ml',c:220,p:2,cb:50,f:0,g:'Pack'},
+ {n:'La Casera',s:'50cl bottle',c:210,p:0,cb:52,f:0,g:'Pack'},
+ {n:'Chivita Orange Juice',s:'250ml',c:110,p:0.7,cb:26,f:0.2,g:'Pack'},
+ {n:'Nutri C',s:'500ml',c:230,p:0,cb:57,f:0,g:'Pack'},
+ {n:'Garri (dry, Ijebu)',s:'100g',c:360,p:1.5,cb:85,f:0.5,g:'Pack'},
+ {n:'Plantain Chips',s:'50g pack',c:260,p:1.2,cb:32,f:14,g:'Pack'},
+
+ /* ── More Nigerian dishes ── */
+ {n:'Ofada Sauce (ayamase)',s:'150g',c:330,p:14,cb:6,f:28,g:'Dish'},
+ {n:'Obe Ata (stew)',s:'150g',c:210,p:6,cb:8,f:17,g:'Dish'},
+ {n:'Edikang Ikong',s:'200g',c:290,p:15,cb:8,f:22,g:'Dish'},
+ {n:'Oha Soup',s:'200g',c:260,p:14,cb:8,f:19,g:'Dish'},
+ {n:'Bitterleaf Soup (onugbu)',s:'200g',c:270,p:14,cb:9,f:20,g:'Dish'},
+ {n:'Nsala (white soup)',s:'200g',c:240,p:20,cb:6,f:15,g:'Dish'},
+ {n:'Gbegiri',s:'150g',c:180,p:9,cb:20,f:7,g:'Dish'},
+ {n:'Groundnut Soup',s:'200g',c:320,p:13,cb:11,f:25,g:'Dish'},
+ {n:'Vegetable Soup (efo elegusi)',s:'200g',c:310,p:14,cb:9,f:25,g:'Dish'},
+ {n:'Pepper Soup, catfish',s:'250g',c:210,p:26,cb:3,f:10,g:'Dish'},
+ {n:'Isi Ewu',s:'150g',c:360,p:21,cb:4,f:29,g:'Dish'},
+ {n:'Asaro (yam porridge)',s:'250g',c:330,p:4,cb:60,f:9,g:'Dish'},
+ {n:'Coconut Rice',s:'200g',c:290,p:5,cb:45,f:10,g:'Dish'},
+ {n:'Native (palm oil) Rice',s:'200g',c:300,p:7,cb:46,f:10,g:'Dish'},
+ {n:'Tuwo Shinkafa',s:'200g',c:250,p:4.5,cb:56,f:0.5,g:'Dish'},
+ {n:'Ogi / Pap (akamu)',s:'250g made up',c:120,p:2,cb:27,f:0.5,g:'Dish'},
+ {n:'Abacha',s:'200g',c:340,p:6,cb:44,f:16,g:'Dish'},
+ {n:'Adalu (beans & corn)',s:'200g',c:250,p:12,cb:40,f:5,g:'Dish'},
+ {n:'Ekuru',s:'150g',c:190,p:11,cb:19,f:8,g:'Dish'},
+ {n:'Okpa',s:'150g',c:280,p:11,cb:30,f:13,g:'Dish'},
+ {n:'Danwake',s:'200g',c:270,p:9,cb:48,f:5,g:'Dish'},
+ {n:'Masa / Waina',s:'3 pieces (90g)',c:240,p:4.5,cb:44,f:5,g:'Dish'},
+ {n:'Ewedu with gbegiri',s:'200g',c:150,p:7,cb:14,f:7,g:'Dish'},
+ {n:'Ukwa (breadfruit)',s:'200g',c:290,p:12,cb:44,f:7,g:'Dish'},
+ {n:'Fried Yam',s:'150g',c:330,p:2.5,cb:47,f:15,g:'Dish'},
+ {n:'Yam & Egg Sauce',s:'300g',c:450,p:13,cb:60,f:18,g:'Dish'},
+ {n:'Beans & Plantain',s:'300g',c:430,p:14,cb:66,f:12,g:'Dish'},
+ {n:'Jollof Rice & Chicken',s:'1 plate (350g)',c:600,p:30,cb:62,f:24,g:'Dish'},
+
+ /* ── Street food, snacks and drinks ── */
+ {n:'Buns',s:'2 (80g)',c:280,p:5,cb:38,f:12,g:'Snack'},
+ {n:'Kokoro',s:'40g',c:190,p:2.5,cb:26,f:9,g:'Snack'},
+ {n:'Kuli Kuli',s:'40g',c:210,p:11,cb:9,f:15,g:'Snack'},
+ {n:'Donkwa',s:'50g',c:230,p:6,cb:26,f:12,g:'Snack'},
+ {n:'Groundnuts, roasted',s:'50g',c:290,p:13,cb:8,f:24,g:'Snack'},
+ {n:'Roasted Corn',s:'1 cob (150g)',c:170,p:5,cb:37,f:2,g:'Snack'},
+ {n:'Coconut, fresh',s:'50g',c:180,p:1.7,cb:7.5,f:17,g:'Snack'},
+ {n:'Tigernuts',s:'50g',c:200,p:2.5,cb:25,f:12,g:'Snack'},
+ {n:'Agbalumo (cherry)',s:'2 fruits (100g)',c:67,p:1,cb:16,f:0.2,g:'Snack'},
+ {n:'Mango',s:'1 medium (200g)',c:120,p:1.6,cb:30,f:0.8,g:'Snack'},
+ {n:'Pawpaw',s:'150g',c:65,p:0.7,cb:16,f:0.4,g:'Snack'},
+ {n:'Garden Egg & Peanut Butter',s:'100g + 30g',c:210,p:8,cb:11,f:16,g:'Snack'},
+ {n:'Meat Pie, small',s:'1 (100g)',c:280,p:7,cb:28,f:16,g:'Snack'},
+ {n:'Fish Roll',s:'1 (90g)',c:250,p:8,cb:26,f:13,g:'Snack'},
+ {n:'Kunu',s:'250ml',c:120,p:2.5,cb:25,f:1,g:'Drink'},
+ {n:'Fura da Nono',s:'300ml',c:230,p:9,cb:32,f:7,g:'Drink'},
+ {n:'Palm Wine',s:'250ml',c:105,p:0.3,cb:12,f:0,g:'Drink'},
+ {n:'Chapman',s:'300ml',c:180,p:0,cb:44,f:0,g:'Drink'},
+ {n:'Garri Soakings',s:'60g garri + water',c:220,p:1,cb:52,f:0.4,g:'Drink'},
 
  /* ── UK supermarket & everyday ── */
  {n:'Weetabix',s:'2 biscuits (37.5g)',c:136,p:4.5,cb:25.5,f:0.7,g:'UK'},
@@ -3345,7 +3438,7 @@ function open(id){document.getElementById(id).classList.add('open')}
 function closeAll(){if(typeof stopScan==='function')stopScan();document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'))}
 
 /* ══ FOOD ══ */
-let MEAL='Breakfast',BASE=null,RES=[],EDIT=null,SAVE_CUSTOM=false;
+let MEAL='Breakfast',BASE=null,RES=[],EDIT=null,SAVE_CUSTOM=false,SHARE_FOOD=false,PICKED_COMM=null;
 
 const numv=x=>{const n=parseFloat(x);return isFinite(n)?n:null};
 const trimN=n=>String(Math.round(n*100)/100);
@@ -3356,22 +3449,28 @@ function myFoods(){return S.custom||[]}
 function allLocal(){return [...myFoods().map(f=>({...f,mine:true})),...DB]}
 
 function openFood(meal,idx){
-  MEAL=meal||'Breakfast';BASE=null;EDIT=idx===undefined?null:idx;SAVE_CUSTOM=false;
+  MEAL=meal||'Breakfast';BASE=null;EDIT=idx===undefined?null:idx;
+  SAVE_CUSTOM=false;SHARE_FOOD=false;PICKED_COMM=null;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.meal===MEAL));
   const g=id=>document.getElementById(id);
   g('online-slot').innerHTML='';
   g('sc-box').textContent='';g('save-custom').classList.remove('on');
+  g('sf-box').textContent='';g('share-food').classList.remove('on');
+  g('share-food').hidden=!ME;
+  const cs=g('comm-slot');if(cs)cs.innerHTML='';
   if(EDIT!==null){
     const f=D().foods[EDIT];
     g('food-title').textContent='Edit food';g('f-save').textContent='Save changes';
-    g('f-edit-btns').hidden=false;g('search-fld').hidden=true;g('save-custom').hidden=true;
+    g('f-edit-btns').hidden=false;g('search-fld').hidden=true;
+    g('save-custom').hidden=true;g('share-food').hidden=true;
     g('f-name').value=f.name;g('f-serv').value=f.serving||'';g('f-cal').value=f.cal;
     g('f-p').value=f.p||'';g('f-c').value=f.c2||'';g('f-f').value=f.f||'';
     BASE=f.base||null;
     if(BASE) buildPortion(f.qty||1,f.unit||'serving'); else g('portion-fld').hidden=true;
   }else{
     g('food-title').textContent='Log food';g('f-save').textContent='Add food';
-    g('f-edit-btns').hidden=true;g('search-fld').hidden=false;g('save-custom').hidden=false;
+    g('f-edit-btns').hidden=true;g('search-fld').hidden=false;
+    g('save-custom').hidden=false;g('share-food').hidden=!ME;
     ['q','f-name','f-serv','f-cal','f-p','f-c','f-f'].forEach(i=>g(i).value='');
     g('results').hidden=true;g('portion-fld').hidden=true;
     chips();
@@ -3383,6 +3482,12 @@ function toggleSaveCustom(){
   SAVE_CUSTOM=!SAVE_CUSTOM;
   document.getElementById('save-custom').classList.toggle('on',SAVE_CUSTOM);
   document.getElementById('sc-box').textContent=SAVE_CUSTOM?'✓':'';
+}
+function toggleShareFood(){
+  if(!ME){toast('Sign in to share foods');return}
+  SHARE_FOOD=!SHARE_FOOD;
+  document.getElementById('share-food').classList.toggle('on',SHARE_FOOD);
+  document.getElementById('sf-box').textContent=SHARE_FOOD?'✓':'';
 }
 
 /* ── portions ───────────────────────────────────────────────
@@ -3464,6 +3569,7 @@ function autoCalc(){
 
 function pick(f){
   const g=id=>document.getElementById(id);
+  if(!f.comm) PICKED_COMM=null;
   g('f-name').value=f.n;
   g('results').hidden=true;g('q').value='';
   g('online-slot').innerHTML='';
@@ -3476,11 +3582,15 @@ function pick(f){
 function doSearch(){
   const term=document.getElementById('q').value.trim();
   const box=document.getElementById('results');
-  if(!term){box.hidden=true;document.getElementById('online-slot').innerHTML='';chips();return}
+  if(!term){box.hidden=true;
+    document.getElementById('online-slot').innerHTML='';
+    const cs=document.getElementById('comm-slot');if(cs)cs.innerHTML='';
+    chips();return}
   document.getElementById('qchips').hidden=true;
   const t=term.toLowerCase();
   RES=allLocal().filter(f=>f.n.toLowerCase().includes(t)).slice(0,12);
   drawResults();
+  queueCommunity(term);
   queueOnline(term);
 }
 function drawResults(){
@@ -3491,12 +3601,16 @@ function drawResults(){
   }
   box.innerHTML=RES.map((f,i)=>{
     const on=S.favs.includes(f.n);
+    const cls=f.g==='Dish'?'dish':f.g==='Pack'?'brand':'';
     const tag=f.mine?'<span class="src-tag mine">Mine</span>'
-             :f.g?`<span class="src-tag">${esc(f.g)}</span>`:'';
+             :f.g?`<span class="src-tag ${cls}">${esc(f.g)}</span>`:'';
     return `<div class="res" data-i="${i}"><span class="res-name">${esc(f.n)}${tag}</span>
       <span class="res-meta">${esc(f.s)} · ${f.c}</span>
       <button class="res-star${on?' on':''}" data-fav="${i}">${on?'★':'☆'}</button></div>`;
-  }).join('');
+  }).join('')
+  +`<div class="res" style="cursor:default"><span class="src-note">
+      <b>Dish</b> figures are typical-recipe estimates — palm oil alone swings them a lot.
+      <b>Pack</b> figures are typical for the product; scan the barcode for the exact label.</span></div>`;
   box.querySelectorAll('.res[data-i]').forEach(r=>r.addEventListener('click',e=>{
     if(e.target.dataset.fav!==undefined) return;
     const f=RES[+r.dataset.i];if(f) pick(f);
@@ -3574,6 +3688,35 @@ async function offSearch(term){
   }
   offCache[key]=[];
   return [];
+}
+let commTimer=null,commSeq=0;
+function queueCommunity(term){
+  clearTimeout(commTimer);
+  const slot=document.getElementById('comm-slot');
+  if(!slot) return;
+  if(!ME||term.length<2){slot.innerHTML='';return}
+  const seq=++commSeq;
+  commTimer=setTimeout(async()=>{
+    const rows=await commSearch(term);
+    if(seq!==commSeq) return;
+    if(!rows.length){slot.innerHTML='';return}
+    commRows=rows;
+    slot.innerHTML=`<div class="online-hd"><span class="micro">Added by people · ${rows.length}</span></div>
+      <div class="results" id="comm-res"></div>`;
+    const box=document.getElementById('comm-res');
+    box.innerHTML=rows.map((f,i)=>`<div class="res" data-c="${i}">
+        <span class="res-name">${esc(f.n)}<span class="src-tag comm">${esc(f.mine?'Yours':f.author||'Shared')}</span></span>
+        <span class="res-meta">${esc(f.s)} · ${f.c}${f.uses?' · used '+f.uses+'\u00d7':''}</span>
+        ${f.mine?`<button class="res-del" data-rm="${i}" title="Remove">\u00d7</button>`:''}</div>`).join('');
+    box.querySelectorAll('.res[data-c]').forEach(r=>r.addEventListener('click',e=>{
+      if(e.target.dataset.rm!==undefined) return;
+      const f=commRows[+r.dataset.c];
+      if(f){pick(f);PICKED_COMM=f.id;toast('From the shared list')}
+    }));
+    box.querySelectorAll('[data-rm]').forEach(btn=>btn.addEventListener('click',e=>{
+      e.stopPropagation();unpublishFood(commRows[+btn.dataset.rm].id);
+    }));
+  },500);
 }
 function queueOnline(term){
   clearTimeout(offTimer);
@@ -3664,6 +3807,50 @@ async function lookupBarcode(code){
   }
 }
 
+/* ── the shared food database ────────────────────────────────
+   Everyone signed in reads it, everyone adds to it, nobody can
+   change anyone else's entry. No approval queue: each result says
+   where it came from and who added it, and people judge. */
+let commCache={},commRows=[];
+async function commSearch(term){
+  if(!CLOUD||!ME) return [];
+  const key=term.toLowerCase();
+  if(commCache[key]) return commCache[key];
+  try{
+    const {data,error}=await CLOUD.from('community_foods')
+      .select('*').ilike('name','%'+term.replace(/[%_]/g,'')+'%')
+      .order('uses',{ascending:false}).limit(8);
+    if(error) throw error;
+    const out=(data||[]).map(r=>({
+      n:r.name,s:r.serving||'100g',c:r.kcal,p:+r.protein||0,cb:+r.carbs||0,f:+r.fat||0,
+      comm:true,id:r.id,author:r.author_name,uses:r.uses,mine:r.created_by===ME.id}));
+    commCache[key]=out;return out;
+  }catch(e){console.warn('community search failed',e);return []}
+}
+async function publishFood(entry){
+  if(!CLOUD||!ME) return;
+  try{
+    const {error}=await CLOUD.from('community_foods').insert({
+      created_by:ME.id,author_name:(S.name||'Someone').split(' ')[0],
+      name:entry.name.slice(0,80),serving:entry.serving||null,
+      kcal:Math.round(entry.cal),protein:entry.p||0,carbs:entry.c2||0,fat:entry.f||0});
+    if(error) throw error;
+    commCache={};
+    toast('Shared with everyone');
+  }catch(e){toast('Could not share: '+why(e))}
+}
+async function unpublishFood(id){
+  if(!CLOUD||!ME||!confirm('Remove this from the shared list?')) return;
+  try{
+    await CLOUD.from('community_foods').delete().eq('id',id);
+    commCache={};doSearch();toast('Removed');
+  }catch(e){toast(why(e))}
+}
+function bumpFood(id){
+  if(!CLOUD||!ME||!id) return;
+  CLOUD.rpc('bump_food_use',{p_id:id}).then(()=>{},()=>{});
+}
+
 /* ── quick chips: favourites, recents, my foods, saved meals ── */
 function chips(){
   const box=document.getElementById('qchips');
@@ -3720,6 +3907,8 @@ function saveFood(){
       S.custom=S.custom.slice(0,60);touchSettings();
       toast('Added to '+MEAL+' · saved to My foods');
     }else toast('Added to '+MEAL);
+    if(SHARE_FOOD) publishFood(e);
+    if(PICKED_COMM) bumpFood(PICKED_COMM);
   }
   touch(VIEW);
   closeAll();render();
